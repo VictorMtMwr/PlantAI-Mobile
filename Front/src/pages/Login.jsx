@@ -81,6 +81,7 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+<<<<<<< HEAD
   },
   background: {
     flex: 1,
@@ -154,6 +155,20 @@ const styles = StyleSheet.create({
     color: '#4ade80', // Verde
     fontSize: 16,
     fontWeight: 'bold',
+=======
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+>>>>>>> 9cd855978dbe4a767c7730f0273ec307f83192bb
   },
 });
 
