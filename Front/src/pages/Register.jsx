@@ -1,31 +1,225 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Alert,
+  ImageBackground,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+// Asumimos que @expo/vector-icons está instalado.
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const Register = () => {
+export default function Register() {
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const navigation = useNavigation();
+
+  const handleRegister = () => {
+    // Validación básica
+    if (!fullName || !email || !password || !confirmPassword) {
+      Alert.alert("Error", "Por favor, completa todos los campos.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Las contraseñas no coinciden.");
+      return;
+    }
+    console.log('Registrando usuario con:', { fullName, email, password });
+    // navigation.navigate('Home'); // Descomentar al tener la ruta Home
+  };
+
+  const navigateToLogin = () => {
+    navigation.navigate('Login');
+  };
+
+  const goBack = () => {
+    navigation.goBack();
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registro</Text>
-      <Text style={styles.subtitle}>Pantalla de registro próximamente.</Text>
-    </View>
+    // 1. Estructura y Fondo
+    <ImageBackground source={require('../../assets/bg-leaf.jpg')} style={styles.background}>
+      {/* Overlay oscuro (2. Fondo y Contenedor) */}
+      <View style={styles.overlay} />
+
+      {/* Botón Atrás */}
+      <TouchableOpacity style={styles.backButton} onPress={goBack}>
+        <MaterialCommunityIcons name="arrow-left" size={28} color="#FFFFFF" />
+      </TouchableOpacity>
+
+      {/* KeyboardAvoidingView para manejar el teclado (1. Estructura) */}
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          // Ajustes para centrado vertical y manejo de scroll
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.contentBox}>
+            {/* 3. Título y Subtítulo (Ubicación: Centrado en la parte superior del contenido) */}
+            <Text style={styles.appTitle}>LeafLens IA</Text>
+            <Text style={styles.screenTitle}>Crear una Cuenta</Text>
+
+            {/* 4. Campos de Entrada */}
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre completo"
+              placeholderTextColor="#999"
+              value={fullName}
+              onChangeText={setFullName}
+              autoCapitalize="words"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Correo Electronico"
+              placeholderTextColor="#999"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Contraseña"
+              placeholderTextColor="#999"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirmar Contraseña"
+              placeholderTextColor="#999"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry
+            />
+
+            {/* 5. Botón Principal: Continuar */}
+            <TouchableOpacity style={styles.mainButton} onPress={handleRegister}>
+              <Text style={styles.mainButtonText}>Continuar</Text>
+            </TouchableOpacity>
+
+            {/* 6. Enlace de Login (Ubicación: Parte inferior) */}
+            <View style={styles.loginContainer}>
+              <Text style={styles.loginText}>
+                ¿Ya tienes una cuenta?-{' '}
+                <Text style={styles.loginLink} onPress={navigateToLogin}>
+                  Iniciar Sesión
+                </Text>
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
-};
+}
 
 const styles = StyleSheet.create({
+  // **2. Fondo y Contenedor:**
+  background: {
+    flex: 1,
+    resizeMode: 'cover', // Ajusta la imagen para cubrir todo el fondo
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)', // Oscurece la imagen de fondo
+  },
   container: {
     flex: 1,
+    width: '100%',
+  },
+  // **Botón Atrás**
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 1,
+    padding: 10,
+  },
+  // **Ubicación:** Centrado Vertical y Horizontal
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    padding: 25,
+    paddingTop: 80, // Espacio adicional para el botón atrás
   },
-  title: {
-    fontSize: 24,
+  contentBox: {
+    width: '100%',
+    maxWidth: 350,
+    alignItems: 'center',
+  },
+  // **3. Título y Subtítulo - Tipo de letra y tamaño**
+  appTitle: {
+    fontSize: 32,
     fontWeight: 'bold',
+    color: '#90EE90', // Un verde brillante similar al mockup
+    marginBottom: 5,
+    // La 'IA' en el mockup parece ser un poco más pequeña o de diferente color, pero lo haremos uniforme por ahora.
+  },
+  screenTitle: {
+    fontSize: 24,
+    color: '#FFFFFF',
+    marginBottom: 40,
+    fontWeight: '600',
+  },
+  // **4. Campos de Entrada - Estilo**
+  input: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20, // Espacio entre campos
+    fontSize: 16,
+    // Box Shadow simulado para dar profundidad (solo funciona en iOS/Android con elevation)
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  // **5. Botón Principal: Continuar - Estilo**
+  mainButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#38B000', // Verde Principal
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
     marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
+  mainButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  // **6. Enlace de Login - Estilo y Ubicación**
+  loginContainer: {
+    // Se mantiene centrado en la parte inferior del ScrollView
+    marginTop: 50,
+    alignItems: 'center',
+  },
+  loginText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+  },
+  loginLink: {
+    color: '#38B000', // El 'Iniciar Sesión' es del color principal
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
 });
-
-export default Register;
