@@ -1,175 +1,223 @@
 import React, { useState } from 'react';
 import {
+  StyleSheet,
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
   Alert,
+  ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+// Asumimos que @expo/vector-icons está instalado.
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
-const Login = () => {
+// Componente para el botón de Google
+const SocialButton = ({ title, iconName, onPress }) => (
+  <TouchableOpacity style={styles.socialButton} onPress={onPress}>
+    <MaterialCommunityIcons name={iconName} size={24} color="#000" style={styles.socialIcon} />
+    <Text style={styles.socialButtonText}>{title}</Text>
+  </TouchableOpacity>
+);
+
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
-    // Aquí iría la lógica de autenticación
-    Alert.alert('Login', `Email: ${email}\nPassword: ${password}`);
+    // 9. Lógica de manejo
+    if (!email || !password) {
+      Alert.alert("Error", "Por favor, introduce tu correo y contraseña.");
+      return;
+    }
+    console.log('Iniciando sesión con:', { email, password });
+    // navigation.navigate('Home'); // Descomentar al tener la ruta Home
+  };
+
+  const navigateToRegister = () => {
+    // 10. Navegación
+    navigation.navigate('Register'); 
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      {/* Fondo simulado */}
-      <View style={styles.background}>
-        <View style={styles.overlay} />
-        <View style={styles.content}>
-          {/* Título */}
-          <Text style={styles.title}>LeafLens IA</Text>
+    // 1. Estructura y Fondo
+    <ImageBackground source={require('../../assets/bg-leaf.jpg')} style={styles.background}>
+      {/* Overlay oscuro (2. Fondo y Contenedor) */}
+      <View style={styles.overlay} />
 
-          {/* Subtítulo */}
-          <Text style={styles.subtitle}>Iniciar sesion</Text>
+      {/* KeyboardAvoidingView para manejar el teclado (1. Estructura) */}
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      >
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          // Ajustes para centrado vertical y manejo de scroll
+          keyboardShouldPersistTaps="handled" 
+        >
+          <View style={styles.contentBox}>
+            {/* 3. Título y Subtítulo (Ubicación: Centrado en la parte superior del contenido) */}
+            <Text style={styles.appTitle}>LeafLens IA</Text>
+            <Text style={styles.screenTitle}>Iniciar sesion</Text>
 
-          {/* Campos de entrada */}
-          <TextInput
-            style={styles.input}
-            placeholder="Correo Electrónico"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
+            {/* 4. Campos de Entrada */}
+            <TextInput
+              style={styles.input}
+              placeholder="Correo Electronico"
+              placeholderTextColor="#999"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Contraseña"
+              placeholderTextColor="#999"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
 
-          {/* Botón Continuar */}
-          <TouchableOpacity style={styles.primaryButton} onPress={handleLogin}>
-            <Text style={styles.primaryButtonText}>Continuar</Text>
-          </TouchableOpacity>
-
-          {/* Botón Google */}
-          <TouchableOpacity style={styles.googleButton}>
-            <Text style={styles.googleButtonText}>G Continue with Google</Text>
-          </TouchableOpacity>
-
-          {/* Enlace de Registro */}
-          <View style={styles.registerContainer}>
-            <Text style={styles.registerText}>¿No tienes una Cuenta? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.registerLink}>Regístrate</Text>
+            {/* 5. Botón Principal: Continuar */}
+            <TouchableOpacity style={styles.mainButton} onPress={handleLogin}>
+              <Text style={styles.mainButtonText}>Continuar</Text>
             </TouchableOpacity>
+
+            <View style={{ height: 10 }} />
+
+            {/* 6. Botón Secundario: Google */}
+            <SocialButton
+              title="Continue with Google"
+              iconName="google"
+              onPress={() => console.log('Login con Google')}
+            />
+
+            {/* 7. Enlace de Registro (Ubicación: Parte inferior) */}
+            <View style={styles.registerContainer}>
+              <Text style={styles.registerText}>
+                ¿No tienes una Cuenta?-{' '}
+                <Text style={styles.registerLink} onPress={navigateToRegister}>
+                  Regístrate
+                </Text>
+              </Text>
+            </View>
           </View>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-<<<<<<< HEAD
-  },
+  // **2. Fondo y Contenedor:**
   background: {
     flex: 1,
-    backgroundColor: '#2d3748', // Gris oscuro para simular fondo de hojas
+    resizeMode: 'cover', // Ajusta la imagen para cubrir todo el fondo
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semitransparente oscuro
+    backgroundColor: 'rgba(0, 0, 0, 0.65)', // Oscurece la imagen de fondo
   },
-  content: {
+  container: {
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
+    width: '100%',
   },
-  title: {
-    fontSize: 36,
+  // **Ubicación:** Centrado Vertical y Horizontal
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center', 
+    alignItems: 'center',
+    padding: 25,
+  },
+  contentBox: {
+    width: '100%',
+    maxWidth: 350, 
+    alignItems: 'center',
+  },
+  // **3. Título y Subtítulo - Tipo de letra y tamaño**
+  appTitle: {
+    fontSize: 32,
     fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
+    color: '#90EE90', // Un verde brillante similar al mockup
+    marginBottom: 5,
+    // La 'IA' en el mockup parece ser un poco más pequeña o de diferente color, pero lo haremos uniforme por ahora.
+  },
+  screenTitle: {
+    fontSize: 24,
+    color: '#FFFFFF',
+    marginBottom: 40,
+    fontWeight: '600',
+  },
+  // **4. Campos de Entrada - Estilo**
+  input: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    marginBottom: 20, // Espacio entre campos
+    fontSize: 16,
+    // Box Shadow simulado para dar profundidad (solo funciona en iOS/Android con elevation)
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3, 
+  },
+  // **5. Botón Principal: Continuar - Estilo**
+  mainButton: {
+    width: '100%',
+    height: 50,
+    backgroundColor: '#38B000', // Verde Principal
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
     marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 24,
-    color: 'white',
-    marginBottom: 30,
-    textAlign: 'left',
-  },
-  input: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    paddingVertical: 12,
-    marginBottom: 15,
-    fontSize: 16,
-  },
-  primaryButton: {
-    backgroundColor: '#2d5a27', // Verde oscuro
-    borderRadius: 8,
-    paddingVertical: 15,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  primaryButtonText: {
-    color: 'white',
+  mainButtonText: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: 'bold',
   },
-  googleButton: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    paddingVertical: 15,
-    alignItems: 'center',
-    marginBottom: 30,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  googleButtonText: {
-    color: '#333',
-    fontSize: 16,
-  },
-  registerContainer: {
+  // **6. Botón Secundario: Google - Estilo**
+  socialButton: {
+    width: '100%',
+    height: 50,
     flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 25,
     justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  socialButtonText: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 10,
+  },
+  socialIcon: {
+    marginRight: 10,
+  },
+  // **7. Enlace de Registro - Estilo y Ubicación**
+  registerContainer: {
+    // Se mantiene centrado en la parte inferior del ScrollView
+    marginTop: 50, 
     alignItems: 'center',
   },
   registerText: {
-    color: 'white',
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: 14,
   },
   registerLink: {
-    color: '#4ade80', // Verde
-    fontSize: 16,
+    color: '#38B000', // El 'Regístrate' es del color principal
     fontWeight: 'bold',
-=======
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
->>>>>>> 9cd855978dbe4a767c7730f0273ec307f83192bb
+    textDecorationLine: 'underline',
   },
 });
-
-export default Login;
