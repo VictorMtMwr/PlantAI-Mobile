@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clasificación de Plantas</title>
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h2>Clasifica tu planta 🌱</h2>
+
+    <div class="actions">
+      <button id="openCamera">📷 Usar cámara</button>
+      <button id="selectImage">🖼️ Subir imagen</button>
+      <input type="file" id="fileInput" accept="image/*" hidden />
+    </div>
+
+    <div class="camera-container">
+      <button id="closeCamera" class="close-camera hidden">✖</button>
+      <video id="camera" autoplay playsinline hidden></video>
+    </div>
+    <canvas id="snapshot" hidden></canvas>
+    <button id="capture" class="capture hidden">Tomar foto</button>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Resultado de la clasificación</h3>
+      <p id="resultText">Procesando...</p>
+      <button id="closeModal">Cerrar</button>
+    </div>
+  </div>
+
+  <script type="module" src="../js/main.js"></script>
+</body>
+</html>
