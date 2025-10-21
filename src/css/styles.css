@@ -180,3 +180,995 @@ button.btn {
 button.btn:hover {
   background-color: #1b5e20;
 }
+
+/* ===================================
+   LOGIN PAGE STYLES
+   =================================== */
+.login-page {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+.login-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../img/login-background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+/* Overlay oscuro para mejor legibilidad */
+.login-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.login-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  padding: 60px 30px 30px;
+  box-sizing: border-box;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.app-title {
+  font-size: 48px;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  color: white;
+  margin: 0;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+}
+
+.app-title::after {
+  content: ' IA';
+  color: #4ade80;
+}
+
+.login-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.login-form {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+.login-input {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 16px;
+  background: white;
+  border: none;
+  border-radius: 12px;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-input::placeholder {
+  color: #9ca3af;
+}
+
+.login-input:focus {
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+  transform: translateY(-2px);
+}
+
+.login-button {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 18px;
+  font-weight: 600;
+  background: white;
+  color: #1f2937;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 8px;
+}
+
+.login-button:hover {
+  background: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.register-link {
+  text-align: center;
+  color: white;
+  font-size: 14px;
+  margin-top: 24px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1s ease-out 0.4s backwards;
+}
+
+.register-link a {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.register-link a:hover {
+  color: #22c55e;
+  text-decoration: underline;
+}
+
+/* Animaciones */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .app-title {
+    font-size: 40px;
+  }
+  
+  .login-title {
+    font-size: 20px;
+  }
+  
+  .login-container {
+    padding: 40px 24px 24px;
+  }
+}
+
+/* ===================================
+   REGISTER PAGE STYLES
+   =================================== */
+.register-page {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+.register-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../img/login-background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+}
+
+/* Overlay oscuro para mejor legibilidad */
+.register-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.register-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  padding: 50px 30px 30px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 30px;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.register-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.register-form {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeInUp 0.8s ease-out 0.2s backwards;
+}
+
+.register-input {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 16px;
+  background: white;
+  border: none;
+  border-radius: 12px;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.register-input::placeholder {
+  color: #9ca3af;
+}
+
+.register-input:focus {
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+  transform: translateY(-2px);
+}
+
+.terms-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.terms-group input[type="checkbox"] {
+  margin-top: 4px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.terms-group label {
+  color: white;
+  font-size: 13px;
+  text-align: left;
+  line-height: 1.4;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.terms-group .terms-link {
+  color: #4ade80;
+  text-decoration: underline;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.terms-group .terms-link:hover {
+  color: #22c55e;
+}
+
+.register-button {
+  width: 100%;
+  padding: 16px 20px;
+  font-size: 18px;
+  font-weight: 600;
+  background: white;
+  color: #1f2937;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 8px;
+}
+
+.register-button:hover {
+  background: #f3f4f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.register-button:active {
+  transform: translateY(0);
+}
+
+.login-link {
+  text-align: center;
+  color: white;
+  font-size: 14px;
+  margin-top: 24px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  animation: fadeIn 1s ease-out 0.4s backwards;
+}
+
+.login-link a {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.login-link a:hover {
+  color: #22c55e;
+  text-decoration: underline;
+}
+
+/* Responsive para Register */
+@media (max-width: 480px) {
+  .register-title {
+    font-size: 20px;
+  }
+  
+  .register-container {
+    padding: 30px 24px 24px;
+  }
+}
+
+/* ===================================
+   HOME PAGE STYLES - REDESIGNED
+   =================================== */
+.home-page {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+/* Horizontal Navigation Panel */
+.horizontal-nav {
+  display: flex;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  overflow-x: auto;
+}
+
+.nav-tab {
+  flex: 1;
+  text-align: center;
+  padding: 16px 20px;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+}
+
+.nav-tab.active {
+  color: #4ade80;
+  border-bottom-color: #4ade80;
+  background: #f0fdf4;
+}
+
+.nav-tab:hover {
+  color: #4ade80;
+  background: #f0fdf4;
+}
+
+/* Main Container */
+.home-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ===================================
+   CAROUSEL SECTION
+   =================================== */
+.carousel-section {
+  margin: 20px;
+  margin-bottom: 30px;
+}
+
+.carousel-container {
+  position: relative;
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-wrapper {
+  overflow: hidden;
+  position: relative;
+  height: 280px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
+}
+
+.carousel-slide {
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  position: relative;
+}
+
+.carousel-slide:nth-child(2) {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+}
+
+.carousel-slide:nth-child(3) {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.slide-content {
+  text-align: center;
+  color: white;
+  padding: 40px 20px;
+  z-index: 2;
+}
+
+.slide-content h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 15px 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.slide-content p {
+  font-size: 16px;
+  margin: 0;
+  opacity: 0.95;
+}
+
+/* Carousel Buttons */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.9);
+  color: #1f2937;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.carousel-btn:hover {
+  background: white;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.prev {
+  left: 15px;
+}
+
+.carousel-btn.next {
+  right: 15px;
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 15px 0;
+}
+
+.indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #d1d5db;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.indicator.active {
+  background: #4ade80;
+  width: 24px;
+  border-radius: 5px;
+}
+
+/* ===================================
+   CLASSIFY SECTION
+   =================================== */
+.classify-section {
+  padding: 20px;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 25px 0;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.action-btn {
+  flex: 1;
+  max-width: 200px;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.action-btn:hover {
+  border-color: #4ade80;
+  background: #f0fdf4;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(74, 222, 128, 0.2);
+}
+
+.action-btn .btn-icon {
+  width: 32px;
+  height: 32px;
+  color: #4ade80;
+}
+
+.action-btn span {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Image Preview */
+.image-preview {
+  margin: 20px auto;
+  max-width: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.image-preview.hidden {
+  display: none;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Classify Button (appears after image selected) */
+.classify-btn {
+  background: #4ade80;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 16px 50px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+  margin-top: 20px;
+}
+
+.classify-btn:hover {
+  background: #22c55e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(74, 222, 128, 0.4);
+}
+
+.classify-btn:active {
+  transform: translateY(0);
+}
+
+.classify-btn.hidden {
+  display: none;
+}
+
+/* Camera View */
+.camera-view {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+}
+
+.camera-view.hidden {
+  display: none;
+}
+
+.camera-video {
+  flex: 1;
+  width: 100%;
+  object-fit: cover;
+}
+
+.camera-controls {
+  display: flex;
+  gap: 15px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+}
+
+.capture-btn {
+  background: #4ade80;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 40px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(74, 222, 128, 0.3);
+}
+
+.capture-btn:hover {
+  background: #22c55e;
+  transform: scale(1.05);
+}
+
+.close-camera-btn {
+  background: #ef4444;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 14px 30px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.close-camera-btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===================================
+   RESPONSIVE HOME
+   =================================== */
+@media (max-width: 768px) {
+  .carousel-wrapper {
+    height: 250px;
+  }
+  
+  .slide-content h2 {
+    font-size: 24px;
+  }
+  
+  .slide-content p {
+    font-size: 14px;
+  }
+  
+  .carousel-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-tab {
+    font-size: 13px;
+    padding: 14px 12px;
+  }
+  
+  .carousel-section {
+    margin: 15px;
+  }
+  
+  .carousel-wrapper {
+    height: 220px;
+  }
+  
+  .slide-content h2 {
+    font-size: 22px;
+  }
+  
+  .slide-content p {
+    font-size: 13px;
+  }
+  
+  .section-title {
+    font-size: 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .action-btn {
+    max-width: 100%;
+  }
+  
+  .classify-btn {
+    font-size: 16px;
+    padding: 14px 40px;
+  }
+  
+  .carousel-btn {
+    display: none;
+  }
+}
+
+/* ===================================
+   SPLASH SCREEN STYLES
+   =================================== */
+.splash-page {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  transition: opacity 0.3s ease-out;
+}
+
+.splash-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../img/splash-background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;
+  animation: zoomIn 3s ease-out;
+}
+
+/* Overlay oscuro */
+.splash-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.splash-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.splash-logo {
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.splash-title {
+  font-size: 64px;
+  font-weight: 800;
+  font-family: 'Playfair Display', serif;
+  color: white;
+  margin: 0;
+  letter-spacing: 0px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  display: inline-block;
+}
+
+/* Animación de letras individuales */
+.letter {
+  display: inline-block;
+  animation: bounceIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.letter-1 { animation-delay: 0.1s; }
+.letter-2 { animation-delay: 0.2s; }
+.letter-3 { animation-delay: 0.3s; }
+.letter-4 { animation-delay: 0.4s; }
+.letter-5 { animation-delay: 0.5s; }
+.letter-6 { animation-delay: 0.6s; }
+.letter-7 { animation-delay: 0.7s; }
+
+.letter-ia {
+  color: #4ade80;
+  text-shadow: 0 0 20px rgba(74, 222, 128, 0.6),
+               0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* Loader dots */
+.splash-loader {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.loader-dot {
+  width: 12px;
+  height: 12px;
+  background: white;
+  border-radius: 50%;
+  animation: dotPulse 1.4s infinite ease-in-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.loader-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loader-dot:nth-child(2) {
+  animation-delay: 0.2s;
+  background: #4ade80;
+}
+
+.loader-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-30px);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(1.2);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Splash */
+@media (max-width: 480px) {
+  .splash-title {
+    font-size: 48px;
+    letter-spacing: 0px;
+  }
+  
+  .loader-dot {
+    width: 10px;
+    height: 10px;
+  }
+}

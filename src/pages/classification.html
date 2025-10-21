@@ -3,35 +3,120 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clasificación de Plantas</title>
+  <title>PlantAI - Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css" />
 </head>
-<body>
-  <div class="container">
-    <h2>Clasifica tu planta 🌱</h2>
+<body class="home-page">
+  <!-- Horizontal Navigation Panel -->
+  <nav class="horizontal-nav">
+    <a href="#inicio" class="nav-tab active" data-tab="inicio">Inicio</a>
+    <a href="#historial" class="nav-tab" data-tab="historial">Historial</a>
+    <a href="#cuenta" class="nav-tab" data-tab="cuenta">Mi Cuenta</a>
+  </nav>
 
-    <div class="actions">
-      <button id="openCamera">📷 Usar cámara</button>
-      <button id="selectImage">🖼️ Subir imagen</button>
-      <input type="file" id="fileInput" accept="image/*" hidden />
+  <!-- Main Content Container -->
+  <main class="home-container">
+    <!-- Carousel Section -->
+    <section class="carousel-section">
+      <div class="carousel-container">
+        <button class="carousel-btn prev" id="prevSlide">‹</button>
+        <div class="carousel-wrapper">
+          <div class="carousel-track">
+            <!-- Slide 1 -->
+            <div class="carousel-slide active">
+              <div class="slide-content">
+                <h2>Bienvenido a PlantAI</h2>
+                <p>Identifica plantas con inteligencia artificial</p>
+              </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="carousel-slide">
+              <div class="slide-content">
+                <h2>Análisis Instantáneo</h2>
+                <p>Obtén resultados precisos en segundos</p>
+              </div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="carousel-slide">
+              <div class="slide-content">
+                <h2>Historial Completo</h2>
+                <p>Guarda y revisa todas tus clasificaciones</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-btn next" id="nextSlide">›</button>
+      </div>
+      <!-- Carousel Indicators -->
+      <div class="carousel-indicators">
+        <span class="indicator active" data-slide="0"></span>
+        <span class="indicator" data-slide="1"></span>
+        <span class="indicator" data-slide="2"></span>
+      </div>
+    </section>
+
+    <!-- Classify Section -->
+    <section class="classify-section">
+      <h2 class="section-title">Clasifica tu planta</h2>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button id="openCamera" class="action-btn camera-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          <span>Usar Cámara</span>
+        </button>
+        
+        <button id="selectImage" class="action-btn gallery-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span>Galería</span>
+        </button>
+      </div>
+
+      <!-- Preview Image (hidden by default) -->
+      <div id="imagePreview" class="image-preview hidden">
+        <img id="previewImg" src="" alt="Preview" />
+      </div>
+
+      <!-- Classify Button (shown after image selected) -->
+      <button id="classifyButton" class="classify-btn hidden">
+        Clasificar Planta
+      </button>
+    </section>
+
+    <!-- Camera View (hidden by default) -->
+    <div id="cameraView" class="camera-view hidden">
+      <video id="camera" autoplay playsinline class="camera-video"></video>
+      <div class="camera-controls">
+        <button id="capture" class="capture-btn">Capturar</button>
+        <button id="closeCamera" class="close-camera-btn">Cerrar</button>
+      </div>
     </div>
 
-    <div class="camera-container">
-      <button id="closeCamera" class="close-camera hidden">✖</button>
-      <video id="camera" autoplay playsinline hidden></video>
-    </div>
+    <!-- Hidden elements -->
+    <input type="file" id="fileInput" accept="image/*" hidden />
     <canvas id="snapshot" hidden></canvas>
-    <button id="capture" class="capture hidden">Tomar foto</button>
-  </div>
+  </main>
 
+  <!-- Modal for results -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
       <h3>Resultado de la clasificación</h3>
       <p id="resultText">Procesando...</p>
-      <button id="closeModal">Cerrar</button>
     </div>
   </div>
 
   <script type="module" src="../js/main.js"></script>
+  <script src="../js/carousel.js"></script>
 </body>
 </html>
