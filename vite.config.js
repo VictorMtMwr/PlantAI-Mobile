@@ -12,6 +12,8 @@ export default defineConfig({
         login: resolve(__dirname, "src/pages/login.html"),
         register: resolve(__dirname, "src/pages/register.html"),
         classification: resolve(__dirname, "src/pages/classification.html"),
+        historial: resolve(__dirname, "src/pages/historial.html"),
+        account: resolve(__dirname, "src/pages/account.html"),
       },
     },
   },

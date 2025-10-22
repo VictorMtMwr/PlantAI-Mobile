@@ -4,15 +4,26 @@
  */
 
 export function initBottomNavigation() {
+  console.log('🚀 Inicializando navegación inferior');
+  
   const navItems = document.querySelectorAll('.nav-item');
   const horizontalNavTabs = document.querySelectorAll('.nav-tab');
   
+  console.log('🔍 Found nav items:', navItems.length);
+  console.log('🔍 Found horizontal nav tabs:', horizontalNavTabs.length);
+  
   // Handle bottom navigation clicks
-  navItems.forEach(item => {
+  navItems.forEach((item, index) => {
+    console.log(`🔍 Nav item ${index}:`, {
+      dataTab: item.getAttribute('data-tab'),
+      text: item.textContent.trim()
+    });
+    
     item.addEventListener('click', (e) => {
       e.preventDefault();
       
       const targetTab = item.getAttribute('data-tab');
+      console.log('🔗 Bottom nav clicked:', targetTab);
       
       // Update active states
       updateActiveStates(targetTab);
@@ -23,17 +34,38 @@ export function initBottomNavigation() {
   });
   
   // Handle horizontal navigation clicks (if exists)
-  horizontalNavTabs.forEach(tab => {
+  horizontalNavTabs.forEach((tab, index) => {
+    console.log(`🔍 Horizontal nav tab ${index}:`, {
+      href: tab.getAttribute('href'),
+      dataTab: tab.getAttribute('data-tab'),
+      text: tab.textContent.trim()
+    });
+    
     tab.addEventListener('click', (e) => {
       e.preventDefault();
       
       const targetTab = tab.getAttribute('data-tab');
       const href = tab.getAttribute('href');
       
+      console.log('🔗 Horizontal nav clicked:', { href, targetTab });
+      
       // Navigate to the target page
       if (href && href !== '#' && !href.startsWith('#')) {
-        window.location.href = href;
+        console.log('📄 Navegando a página:', href);
+        // For Android native, ensure proper navigation
+        if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+          console.log('📱 Using Capacitor navigation for native platform');
+          // For Capacitor, we need to use relative paths from the dist folder
+          const relativePath = href.startsWith('./') ? href : './' + href;
+          console.log('📱 Navigating to:', relativePath);
+          window.location.href = relativePath;
+        } else {
+          console.log('🌐 Using standard web navigation');
+          // For web, use standard navigation
+          window.location.href = href;
+        }
       } else {
+        console.log('📱 Cambiando pestaña:', targetTab);
         // Update active states for tab content
         updateActiveStates(targetTab);
         
@@ -65,14 +97,18 @@ function updateActiveStates(activeTab) {
 }
 
 function handleTabContent(tabName) {
+  console.log('🔄 Handling tab content for:', tabName);
+  
   // Hide all content sections
   const sections = document.querySelectorAll('.tab-content');
+  console.log('🔍 Found tab content sections:', sections.length);
   sections.forEach(section => {
     section.classList.add('hidden');
   });
   
   // Show the selected tab content
   const targetSection = document.getElementById(`${tabName}-content`);
+  console.log('🎯 Target section:', targetSection ? 'found' : 'not found');
   if (targetSection) {
     targetSection.classList.remove('hidden');
   }
@@ -80,38 +116,57 @@ function handleTabContent(tabName) {
   // Handle specific tab actions
   switch (tabName) {
     case 'inicio':
+      console.log('🏠 Handling inicio tab');
       handleInicioTab();
       break;
     case 'historial':
+      console.log('📚 Handling historial tab');
       handleHistorialTab();
       break;
     case 'cuenta':
+      console.log('👤 Handling cuenta tab');
       handleCuentaTab();
       break;
+    default:
+      console.log('❓ Unknown tab:', tabName);
   }
 }
 
 function handleInicioTab() {
+  console.log('🏠 Handling inicio tab - showing carousel and classify sections');
+  
   // Ensure carousel is visible and functional
   const carouselSection = document.querySelector('.carousel-section');
+  console.log('🎠 Carousel section:', carouselSection ? 'found' : 'not found');
   if (carouselSection) {
     carouselSection.style.display = 'block';
   }
   
   // Ensure classify section is visible
   const classifySection = document.querySelector('.classify-section');
+  console.log('🔬 Classify section:', classifySection ? 'found' : 'not found');
   if (classifySection) {
     classifySection.style.display = 'block';
   }
 }
 
 function handleHistorialTab() {
+  console.log('📚 Handling historial tab - creating/showing historial content');
+  
   // Create or show historial content
   let historialContent = document.getElementById('historial-content');
+  console.log('📚 Historial content:', historialContent ? 'found' : 'not found');
   
   if (!historialContent) {
+    console.log('📚 Creating new historial content');
     historialContent = createHistorialContent();
-    document.querySelector('.home-container').appendChild(historialContent);
+    const homeContainer = document.querySelector('.home-container');
+    console.log('🏠 Home container:', homeContainer ? 'found' : 'not found');
+    if (homeContainer) {
+      homeContainer.appendChild(historialContent);
+    } else {
+      console.error('❌ No home container found to append historial content');
+    }
   }
   
   historialContent.classList.remove('hidden');
@@ -120,17 +175,30 @@ function handleHistorialTab() {
   const carouselSection = document.querySelector('.carousel-section');
   const classifySection = document.querySelector('.classify-section');
   
+  console.log('🎠 Hiding carousel section:', carouselSection ? 'found' : 'not found');
+  console.log('🔬 Hiding classify section:', classifySection ? 'found' : 'not found');
+  
   if (carouselSection) carouselSection.style.display = 'none';
   if (classifySection) classifySection.style.display = 'none';
 }
 
 function handleCuentaTab() {
+  console.log('👤 Handling cuenta tab - creating/showing cuenta content');
+  
   // Create or show cuenta content
   let cuentaContent = document.getElementById('cuenta-content');
+  console.log('👤 Cuenta content:', cuentaContent ? 'found' : 'not found');
   
   if (!cuentaContent) {
+    console.log('👤 Creating new cuenta content');
     cuentaContent = createCuentaContent();
-    document.querySelector('.home-container').appendChild(cuentaContent);
+    const homeContainer = document.querySelector('.home-container');
+    console.log('🏠 Home container:', homeContainer ? 'found' : 'not found');
+    if (homeContainer) {
+      homeContainer.appendChild(cuentaContent);
+    } else {
+      console.error('❌ No home container found to append cuenta content');
+    }
   }
   
   cuentaContent.classList.remove('hidden');
@@ -139,11 +207,15 @@ function handleCuentaTab() {
   const carouselSection = document.querySelector('.carousel-section');
   const classifySection = document.querySelector('.classify-section');
   
+  console.log('🎠 Hiding carousel section:', carouselSection ? 'found' : 'not found');
+  console.log('🔬 Hiding classify section:', classifySection ? 'found' : 'not found');
+  
   if (carouselSection) carouselSection.style.display = 'none';
   if (classifySection) classifySection.style.display = 'none';
 }
 
 function createHistorialContent() {
+  console.log('📚 Creating historial content dynamically');
   const content = document.createElement('div');
   content.id = 'historial-content';
   content.className = 'tab-content';
@@ -216,10 +288,12 @@ function createHistorialContent() {
     </div>
   `;
   
+  console.log('📚 Historial content created successfully');
   return content;
 }
 
 function createCuentaContent() {
+  console.log('👤 Creating cuenta content dynamically');
   const content = document.createElement('div');
   content.id = 'cuenta-content';
   content.className = 'tab-content';
@@ -307,6 +381,7 @@ function createCuentaContent() {
     </div>
   `;
   
+  console.log('👤 Cuenta content created successfully');
   return content;
 }
 

@@ -694,5 +694,11 @@ window.viewClassificationDetails = function (classificationId) {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  window.historialManager = new HistorialManager();
+  console.log('🚀 Historial page loaded, initializing HistorialManager');
+  try {
+    window.historialManager = new HistorialManager();
+    console.log('✅ HistorialManager initialized successfully');
+  } catch (error) {
+    console.error('❌ Error initializing HistorialManager:', error);
+  }
 });

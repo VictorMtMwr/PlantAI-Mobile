@@ -119,9 +119,19 @@
   <script type="module">
     // Universal navigation handler
     document.addEventListener('DOMContentLoaded', function() {
-      import('../js/navigation/universalNavigation.js').then(module => {
-        module.initUniversalNavigation();
-      });
+      try {
+        import('../js/navigation/universalNavigation.js').then(module => {
+          module.initUniversalNavigation();
+        }).catch(error => {
+          console.error('Error loading universal navigation:', error);
+          // Fallback: try to load navigation without modules
+          if (typeof initUniversalNavigation === 'function') {
+            initUniversalNavigation();
+          }
+        });
+      } catch (error) {
+        console.error('Error in navigation setup:', error);
+      }
     });
   </script>
 </body>

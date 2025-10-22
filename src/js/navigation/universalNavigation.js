@@ -10,8 +10,15 @@ export function initUniversalNavigation() {
   
   // Handle all navigation tabs
   const navTabs = document.querySelectorAll('.nav-tab');
+  console.log('🔍 Found navigation tabs:', navTabs.length);
   
-  navTabs.forEach(tab => {
+  navTabs.forEach((tab, index) => {
+    console.log(`🔍 Tab ${index}:`, {
+      href: tab.getAttribute('href'),
+      dataTab: tab.getAttribute('data-tab'),
+      text: tab.textContent.trim()
+    });
+    
     tab.addEventListener('click', function(e) {
       e.preventDefault();
       
@@ -23,7 +30,18 @@ export function initUniversalNavigation() {
       // Navigate to the target page
       if (href && href !== '#' && !href.startsWith('#')) {
         console.log('📄 Navegando a página:', href);
-        window.location.href = href;
+        // For Android native, ensure proper navigation
+        if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+          console.log('📱 Using Capacitor navigation for native platform');
+          // For Capacitor, we need to use relative paths from the dist folder
+          const relativePath = href.startsWith('./') ? href : './' + href;
+          console.log('📱 Navigating to:', relativePath);
+          window.location.href = relativePath;
+        } else {
+          console.log('🌐 Using standard web navigation');
+          // For web, use standard navigation
+          window.location.href = href;
+        }
       } else {
         console.log('📱 Cambiando pestaña:', targetTab);
         // Handle tab content switching if needed

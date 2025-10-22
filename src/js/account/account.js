@@ -410,5 +410,11 @@ class AccountManager {
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-  new AccountManager();
+  console.log('🚀 Account page loaded, initializing AccountManager');
+  try {
+    new AccountManager();
+    console.log('✅ AccountManager initialized successfully');
+  } catch (error) {
+    console.error('❌ Error initializing AccountManager:', error);
+  }
 });
