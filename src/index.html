@@ -3,19 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PlantAI - Splash</title>
-  <link rel="stylesheet" href="../css/styles.css" />
-  <script>
-    // Redirige al login después de 2 segundos
-    setTimeout(() => {
-      window.location.href = "./pages/login.html";
-    }, 2000);
-  </script>
+  <title>PlantAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body class="splash">
-  <div class="splash-content">
-    <h1>🌿 PlantAI</h1>
-    <p>Detecta y aprende sobre tus plantas</p>
+<body class="splash-page">
+  <div class="splash-background"></div>
+  
+  <div class="splash-container">
+    <div class="splash-logo">
+      <h1 class="splash-title">
+        <span class="letter letter-1">P</span><span class="letter letter-2">l</span><span class="letter letter-3">a</span><span class="letter letter-4">n</span><span class="letter letter-5">t</span><span class="letter letter-6 letter-ia">A</span><span class="letter letter-7 letter-ia">I</span>
+      </h1>
+      <div class="splash-loader">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    // Redirige al login después de 3 segundos
+    setTimeout(() => {
+      document.body.style.opacity = '0';
+      setTimeout(() => {
+        window.location.href = "./pages/login.html";
+      }, 300);
+    }, 3000);
+  </script>
 </body>
 </html>

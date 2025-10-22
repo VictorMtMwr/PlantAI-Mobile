@@ -3,35 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Clasificación de Plantas</title>
+  <title>PlantAI - Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css" />
 </head>
-<body>
-  <div class="container">
-    <h2>Clasifica tu planta 🌱</h2>
+<body class="home-page">
+  <!-- Main Content Container -->
+  <main class="home-container">
+    <!-- Logo Section -->
+    <section class="logo-section">
+      <div class="logo-container">
+        <div class="logo-content">
+          <img src="../img/logo.png" alt="PlantAI Logo" class="app-logo" />
+        </div>
+      </div>
+    </section>
 
-    <div class="actions">
-      <button id="openCamera">📷 Usar cámara</button>
-      <button id="selectImage">🖼️ Subir imagen</button>
-      <input type="file" id="fileInput" accept="image/*" hidden />
+    <!-- Carousel Section -->
+    <section class="carousel-section">
+      <div class="carousel-container">
+        <button class="carousel-btn prev" id="prevSlide">‹</button>
+        <div class="carousel-wrapper">
+          <div class="carousel-track">
+            <!-- Slide 1 -->
+            <div class="carousel-slide active">
+              <div class="slide-content">
+                <h2>Bienvenido a PlantAI</h2>
+                <p>Identifica plantas con inteligencia artificial</p>
+              </div>
+            </div>
+            <!-- Slide 2 -->
+            <div class="carousel-slide">
+              <div class="slide-content">
+                <h2>Análisis Instantáneo</h2>
+                <p>Obtén resultados precisos en segundos</p>
+              </div>
+            </div>
+            <!-- Slide 3 -->
+            <div class="carousel-slide">
+              <div class="slide-content">
+                <h2>Historial Completo</h2>
+                <p>Guarda y revisa todas tus clasificaciones</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-btn next" id="nextSlide">›</button>
+      </div>
+      <!-- Carousel Indicators -->
+      <div class="carousel-indicators">
+        <span class="indicator active" data-slide="0"></span>
+        <span class="indicator" data-slide="1"></span>
+        <span class="indicator" data-slide="2"></span>
+      </div>
+    </section>
+
+    <!-- Classify Section -->
+    <section class="classify-section">
+      <h2 class="section-title">Clasifica tu planta</h2>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button id="openCamera" class="action-btn camera-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+          <span>Usar Cámara</span>
+        </button>
+        
+        <button id="selectImage" class="action-btn gallery-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+            <polyline points="21 15 16 10 5 21"></polyline>
+          </svg>
+          <span>Galería</span>
+        </button>
+      </div>
+
+      <!-- Preview Image (hidden by default) -->
+      <div id="imagePreview" class="image-preview hidden">
+        <img id="previewImg" src="" alt="Preview" />
+      </div>
+
+      <!-- Classify Button (shown after image selected) -->
+      <button id="classifyButton" class="classify-btn hidden">
+        Clasificar Planta
+      </button>
+    </section>
+
+    <!-- Camera View (hidden by default) -->
+    <div id="cameraView" class="camera-view hidden">
+      <video id="camera" autoplay playsinline class="camera-video"></video>
+      <div class="camera-controls">
+        <button id="capture" class="capture-btn">Capturar</button>
+        <button id="closeCamera" class="close-camera-btn">Cerrar</button>
+      </div>
     </div>
 
-    <div class="camera-container">
-      <button id="closeCamera" class="close-camera hidden">✖</button>
-      <video id="camera" autoplay playsinline hidden></video>
-    </div>
+    <!-- Hidden elements -->
+    <input type="file" id="fileInput" accept="image/*" hidden />
     <canvas id="snapshot" hidden></canvas>
-    <button id="capture" class="capture hidden">Tomar foto</button>
-  </div>
+  </main>
 
+  <!-- Modal for results -->
   <div id="modal" class="modal hidden">
     <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
       <h3>Resultado de la clasificación</h3>
       <p id="resultText">Procesando...</p>
-      <button id="closeModal">Cerrar</button>
     </div>
   </div>
 
+  <!-- Horizontal Navigation Panel - Bottom -->
+  <nav class="horizontal-nav bottom-nav">
+    <a href="#inicio" class="nav-tab active" data-tab="inicio">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+        <polyline points="9,22 9,12 15,12 15,22"></polyline>
+      </svg>
+      <span>Inicio</span>
+    </a>
+    <a href="historial.html" class="nav-tab" data-tab="historial">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14,2 14,8 20,8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10,9 9,9 8,9"></polyline>
+      </svg>
+      <span>Historial</span>
+    </a>
+    <a href="account.html" class="nav-tab" data-tab="cuenta">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+      <span>Mi Cuenta</span>
+    </a>
+  </nav>
+
   <script type="module" src="../js/main.js"></script>
+  <script src="../js/carousel.js"></script>
+  <script type="module">
+    import { initSessionCheck } from '../js/auth/sessionManager.js';
+    import { Capacitor } from '@capacitor/core';
+    
+    // Verificar sesión al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+      // Verificar si hay una sesión válida
+      if (initSessionCheck()) {
+        console.log('✅ Sesión válida encontrada');
+      } else {
+        console.log('❌ No hay sesión válida');
+      }
+    });
+
+    // Manejar clicks en la navegación
+    document.addEventListener('DOMContentLoaded', function() {
+      import('../js/navigation/universalNavigation.js').then(module => {
+        module.initUniversalNavigation();
+      });
+    });
+  </script>
 </body>
 </html>

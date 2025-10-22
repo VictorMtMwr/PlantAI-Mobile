@@ -4,6 +4,22 @@ import { base64ToBlob } from '../utils/base64.js';
 import { isNativePlatform } from '../core/config.js';
 import { sendToServer } from '../classification/classify.js';
 
+// Show image preview and classify button
+function showImagePreview(imageSrc, blob) {
+  const imagePreview = document.getElementById('imagePreview');
+  const previewImg = document.getElementById('previewImg');
+  const classifyBtn = document.getElementById('classifyButton');
+  
+  if (previewImg && imagePreview && classifyBtn) {
+    previewImg.src = imageSrc;
+    imagePreview.classList.remove('hidden');
+    classifyBtn.classList.remove('hidden');
+    
+    // Store blob for classification
+    classifyBtn.onclick = () => sendToServer(blob);
+  }
+}
+
 export function initGallery() {
   const selectImageButton = document.getElementById("selectImage");
   const fileInput = document.getElementById("fileInput");
@@ -33,7 +49,10 @@ export function initGallery() {
         blob = await response.blob();
       } else throw new Error("No se pudo obtener la ruta de la imagen");
 
-      await sendToServer(blob);
+      // Show preview instead of sending directly
+      const reader = new FileReader();
+      reader.onload = (e) => showImagePreview(e.target.result, blob);
+      reader.readAsDataURL(blob);
 
     } catch (error) {
       console.error("❌ Error galería:", error);
@@ -44,7 +63,11 @@ export function initGallery() {
   if (fileInput) {
     fileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
-      if (file) sendToServer(file);
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => showImagePreview(event.target.result, file);
+        reader.readAsDataURL(file);
+      }
     });
   }
 }
