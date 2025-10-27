@@ -1,29 +1,23 @@
 import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const app = express();
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PORT = process.env.PORT || 3000;
 
-// === Proxy de API ===
-app.use(
-  "/api",
-  createProxyMiddleware({
-    target: "http://plantai.lab.utb.edu.co:5000",
-    changeOrigin: true,
-    secure: false,
-  })
-);
+// Para usar __dirname con ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// === Servir el frontend build ===
+// Servir contenido estático de la carpeta dist
 app.use(express.static(path.join(__dirname, "dist")));
 
+// Redirigir cualquier ruta al index.html (para SPA)
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
-const PORT = process.env.PORT || 10000;
+// Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+  console.log(`✅ Servidor corriendo en el puerto ${PORT}`);
 });
