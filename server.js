@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -9,7 +10,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Proxy para tu API HTTP externa
+// ✅ Proxy para tu API HTTP externa
 app.use(
   "/api",
   createProxyMiddleware({
@@ -19,11 +20,11 @@ app.use(
   })
 );
 
-// Servir los archivos estáticos del build de Vite
+// ✅ Servir archivos estáticos del build de Vite
 app.use(express.static(path.join(__dirname, "dist")));
 
-// Redirigir cualquier ruta al index.html (SPA routing)
-app.get("*", (req, res) => {
+// ✅ Fallback para rutas desconocidas (SPA routing)
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
