@@ -1,19 +1,19 @@
 import { API_URL, isNativePlatform } from '../core/config.js';
-import { CapacitorHttp } from '@capacitor/core';
+import { CapacitorHttp, Capacitor } from '@capacitor/core';
 import { logout, hasValidSession } from '../auth/login.js';
 
 class AccountManager {
   constructor() {
-    // Verificar si hay una sesión válida
     if (!hasValidSession()) {
       this.redirectToLogin();
       return;
     }
     
-    // Obtener el token desde localStorage o sessionStorage
     const rememberMe = localStorage.getItem("rememberMe");
     this.token = rememberMe === "true" ? localStorage.getItem('token') : sessionStorage.getItem('token');
     this.userData = null;
+    this.tokenVisible = false;
+    this.detailsExpanded = false;
     this.init();
   }
 
@@ -24,397 +24,876 @@ class AccountManager {
     }
 
     this.setupEventListeners();
+    
+    // Esperar un momento para que themeManager se inicialice
+    setTimeout(() => {
+      this.updateThemeDisplay();
+    }, 100);
+    
     await this.loadUserData();
   }
 
   setupEventListeners() {
-    // Toggle token visibility
     const toggleTokenBtn = document.getElementById('toggleToken');
     if (toggleTokenBtn) {
-      toggleTokenBtn.addEventListener('click', () => this.toggleTokenVisibility());
+      console.log('✅ Botón toggleToken encontrado');
+      toggleTokenBtn.addEventListener('click', () => {
+        console.log('👁️ Click en botón toggleToken');
+        this.toggleTokenVisibility();
+      });
+    } else {
+      console.error('❌ Botón toggleToken NO encontrado');
     }
 
-    // Copy token
     const copyTokenBtn = document.getElementById('copyToken');
     if (copyTokenBtn) {
       copyTokenBtn.addEventListener('click', () => this.copyToken());
     }
 
-    // Logout
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => this.logout());
+    const themeToggleCard = document.getElementById('themeToggleCard');
+    if (themeToggleCard) {
+      // Soporte para web y móvil
+      const handleThemeToggle = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🎨 Botón de tema presionado en cuenta');
+        this.toggleTheme();
+      };
+      
+      themeToggleCard.addEventListener('click', handleThemeToggle);
+      themeToggleCard.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('👆 Touch en botón de tema');
+        this.toggleTheme();
+      });
     }
 
-    // Retry button
+    const exportDataCard = document.getElementById('exportDataCard');
+    if (exportDataCard) {
+      exportDataCard.addEventListener('click', () => this.exportData());
+    }
+
+    const settingsCard = document.getElementById('settingsCard');
+    if (settingsCard) {
+      settingsCard.addEventListener('click', () => this.openSettings());
+    }
+
+    const logoutCard = document.getElementById('logoutCard');
+    if (logoutCard) {
+      logoutCard.addEventListener('click', () => this.showLogoutConfirmation());
+    }
+
+    const toggleDetails = document.getElementById('toggleDetails');
+    if (toggleDetails) {
+      toggleDetails.addEventListener('click', () => this.toggleAccountDetails());
+    }
+
     const retryBtn = document.getElementById('retryBtn');
     if (retryBtn) {
       retryBtn.addEventListener('click', () => this.loadUserData());
+    }
+
+    window.addEventListener('themeChanged', () => {
+      this.updateThemeDisplay();
+    });
+    
+    // Actualizar tema al hacer la página visible (cuando vuelves a ella)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        console.log('📄 Página visible de nuevo, actualizando tema...');
+        setTimeout(() => {
+          this.updateThemeDisplay();
+        }, 100);
+      }
+    });
+    
+    // Actualizar al cargar la página
+    window.addEventListener('pageshow', () => {
+      console.log('📄 Página cargada/mostrada, actualizando tema...');
+      setTimeout(() => {
+        this.updateThemeDisplay();
+      }, 100);
+    });
+  }
+
+  updateThemeDisplay() {
+    const currentThemeText = document.getElementById('currentThemeText');
+    
+    // Leer el tema REAL del DOM, no de localStorage
+    const htmlTheme = document.documentElement.getAttribute('data-theme');
+    let currentTheme = htmlTheme === 'dark' ? 'dark' : 'light';
+    
+    // Verificar también con themeManager si está disponible
+    if (window.themeManager) {
+      currentTheme = window.themeManager.getCurrentTheme();
+      console.log('📱 Tema desde themeManager:', currentTheme);
+    } else {
+      console.log('📱 Tema desde HTML:', currentTheme);
+    }
+    
+    if (currentThemeText) {
+      currentThemeText.textContent = currentTheme === 'dark' ? 'Modo oscuro' : 'Modo claro';
+      console.log('📱 Texto del tema actualizado a:', currentTheme);
+    }
+    
+    // Actualizar iconos del botón de tema
+    const themeCard = document.getElementById('themeToggleCard');
+    if (themeCard) {
+      const sunIcon = themeCard.querySelector('.sun-icon');
+      const moonIcon = themeCard.querySelector('.moon-icon');
+      
+      if (currentTheme === 'dark') {
+        if (sunIcon) sunIcon.style.display = 'block';
+        if (moonIcon) moonIcon.style.display = 'none';
+      } else {
+        if (sunIcon) sunIcon.style.display = 'none';
+        if (moonIcon) moonIcon.style.display = 'block';
+      }
+    }
+  }
+
+  toggleTheme() {
+    console.log('🔄 toggleTheme() llamado en account.js');
+    
+    // Asegurar que themeManager existe
+    if (!window.themeManager) {
+      console.warn('⚠️ themeManager no existe, intentando obtener desde localStorage');
+      
+      // Fallback: cambiar tema manualmente
+      const currentTheme = localStorage.getItem('plantai-theme') || 'light';
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      console.log('Cambiando de', currentTheme, 'a', newTheme);
+      
+      // Aplicar cambio directamente
+      localStorage.setItem('plantai-theme', newTheme);
+      
+      const html = document.documentElement;
+      if (newTheme === 'dark') {
+        html.setAttribute('data-theme', 'dark');
+        document.body.classList.add('dark-theme');
+        document.body.classList.remove('light-theme');
+      } else {
+        html.removeAttribute('data-theme');
+        document.body.classList.add('light-theme');
+        document.body.classList.remove('dark-theme');
+      }
+      
+      this.updateThemeDisplay();
+      this.showToast('Tema cambiado', 'success');
+      return;
+    }
+    
+    // Si themeManager existe, usarlo normalmente
+    console.log('ThemeManager disponible:', !!window.themeManager);
+    console.log('Tema actual antes:', window.themeManager.getCurrentTheme());
+    
+    window.themeManager.toggleTheme();
+    
+    console.log('Tema actual después:', window.themeManager.getCurrentTheme());
+    this.updateThemeDisplay();
+    this.showToast('Tema cambiado', 'success');
+  }
+
+  async exportData() {
+    try {
+      this.showToast('Preparando exportación...', 'info');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Solo exportar datos reales que existan en localStorage
+      const realData = this.getRealUserData();
+      
+      if (!realData.hasData) {
+        this.showToast('No hay datos para exportar', 'info');
+        return;
+      }
+
+      const blob = new Blob([JSON.stringify(realData.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `plantai-datos-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      this.showToast(`Datos exportados: ${realData.summary}`, 'success');
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      this.showToast('Error al exportar datos', 'error');
+    }
+  }
+
+  getRealUserData() {
+    const data = {
+      exportDate: new Date().toISOString(),
+      app: 'PlantAI Mobile'
+    };
+    
+    let hasData = false;
+    let summary = '';
+    
+    // Solo agregar datos que realmente existan
+    const classificationHistory = this.getClassificationHistory();
+    if (classificationHistory.length > 0) {
+      data.classificationHistory = classificationHistory;
+      data.totalClassifications = classificationHistory.length;
+      hasData = true;
+      summary += `${classificationHistory.length} clasificaciones`;
+    }
+    
+    // Verificar si hay token de autenticación
+    const rememberMe = localStorage.getItem('rememberMe');
+    const token = rememberMe === "true" ? localStorage.getItem('token') : sessionStorage.getItem('token');
+    if (token) {
+      data.hasAuthToken = true;
+      if (summary) summary += ', ';
+      summary += 'token de sesión';
+      hasData = true;
+    }
+    
+    // Verificar configuraciones guardadas
+    const theme = localStorage.getItem('theme');
+    if (theme) {
+      data.settings = { theme };
+      if (summary) summary += ', ';
+      summary += 'configuraciones';
+      hasData = true;
+    }
+    
+    if (!hasData) {
+      summary = 'sin datos';
+    }
+    
+    return { hasData, data, summary };
+  }
+
+  getClassificationHistory() {
+    try {
+      const history = JSON.parse(localStorage.getItem('classificationHistory') || '[]');
+      return Array.isArray(history) ? history : [];
+    } catch (error) {
+      console.error('Error reading classification history:', error);
+      return [];
+    }
+  }
+
+  openSettings() {
+    const settingsHTML = `
+      <div class="settings-modal">
+        <div class="settings-content">
+          <div class="settings-header">
+            <h3>Configuraciones</h3>
+            <span class="close-settings">&times;</span>
+          </div>
+          <div class="settings-body">
+            <div class="setting-item">
+              <label>Tema de la aplicación</label>
+              <select id="themeSelect">
+                <option value="light">Claro</option>
+                <option value="dark">Oscuro</option>
+                <option value="auto">Automático</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label>Guardar imágenes clasificadas</label>
+              <input type="checkbox" id="saveImages" checked>
+            </div>
+            <div class="setting-item">
+              <label>Notificaciones</label>
+              <input type="checkbox" id="notifications" checked>
+            </div>
+            <div class="setting-item">
+              <label>Limpiar historial de clasificaciones</label>
+              <button id="clearHistory" class="btn-danger">Limpiar Historial</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Agregar el modal al body
+    const modal = document.createElement('div');
+    modal.innerHTML = settingsHTML;
+    document.body.appendChild(modal.firstElementChild);
+    
+    // Configurar valores actuales
+    const themeSelect = document.getElementById('themeSelect');
+    const currentTheme = localStorage.getItem('theme') || 'auto';
+    themeSelect.value = currentTheme;
+    
+    // Event listeners
+    document.querySelector('.close-settings').addEventListener('click', () => {
+      document.querySelector('.settings-modal').remove();
+    });
+    
+    themeSelect.addEventListener('change', (e) => {
+      const newTheme = e.target.value;
+      if (window.themeManager) {
+        if (newTheme === 'auto') {
+          window.themeManager.setAutoTheme();
+        } else {
+          window.themeManager.setTheme(newTheme);
+        }
+      }
+    });
+    
+    document.getElementById('clearHistory').addEventListener('click', () => {
+      if (confirm('¿Estás seguro de que quieres limpiar todo el historial de clasificaciones?')) {
+        localStorage.removeItem('classificationHistory');
+        this.showToast('Historial limpiado exitosamente', 'success');
+        this.displayUserData(); // Actualizar el conteo
+        document.querySelector('.settings-modal').remove();
+      }
+    });
+    
+    // Cerrar al hacer click fuera
+    document.querySelector('.settings-modal').addEventListener('click', (e) => {
+      if (e.target.classList.contains('settings-modal')) {
+        document.querySelector('.settings-modal').remove();
+      }
+    });
+  }
+
+  showLogoutConfirmation() {
+    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+      this.logout();
+    }
+  }
+
+  toggleAccountDetails() {
+    const toggleBtn = document.getElementById('toggleDetails');
+    const content = document.getElementById('accountDetailsContent');
+    
+    this.detailsExpanded = !this.detailsExpanded;
+    
+    if (this.detailsExpanded) {
+      content.classList.remove('collapsed');
+      content.classList.add('expanded');
+      toggleBtn.classList.add('expanded');
+    } else {
+      content.classList.remove('expanded');
+      content.classList.add('collapsed');
+      toggleBtn.classList.remove('expanded');
     }
   }
 
   async loadUserData() {
     this.showLoading();
-    this.hideError();
-
+    
     try {
-      // Primero intentamos obtener la información del usuario desde el token
-      const userData = await this.getUserInfoFromToken();
-      
-      if (userData) {
-        this.userData = userData;
-        this.displayUserData(userData);
-        this.hideLoading();
-      } else {
-        // Si no podemos obtener info del token, intentamos hacer una petición al servidor
-        const serverData = await this.getUserInfoFromServer();
-        this.userData = serverData;
-        this.displayUserData(serverData);
-        this.hideLoading();
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error);
-      this.showError();
-      this.hideLoading();
-    }
-  }
-
-  async getUserInfoFromToken() {
-    try {
-      // Decodificar el token JWT (solo la parte del payload)
-      const tokenParts = this.token.split('.');
-      if (tokenParts.length !== 3) {
-        throw new Error('Invalid token format');
-      }
-
-      const payload = JSON.parse(atob(tokenParts[1]));
-      
-      // Formatear los datos del usuario
-      return {
-        id: payload.sub || payload.id || payload.user_id,
-        name: payload.name || payload.full_name || payload.username || 'Usuario',
-        email: payload.email || payload.email_address,
-        status: payload.status || 'Activo',
-        createdAt: payload.created_at || payload.iat ? new Date(payload.iat * 1000).toLocaleDateString() : 'No disponible',
-        role: payload.role || payload.user_role || 'Usuario',
-        permissions: payload.permissions || [],
-        ...payload // Incluir cualquier otra propiedad del token
+      // Primero intentar cargar datos del servidor
+      const requestConfig = {
+        url: `${API_URL}/user/profile`,
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json',
+        },
       };
-    } catch (error) {
-      console.error('Error parsing token:', error);
-      return null;
-    }
-  }
 
-  async getUserInfoFromServer() {
-    try {
       let response;
-      
-      if (isNativePlatform) {
-        response = await CapacitorHttp.get({
-          url: `${API_URL}/auth/me`,
-          headers: {
-            'Authorization': `Bearer ${this.token}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      if (isNativePlatform()) {
+        response = await CapacitorHttp.get(requestConfig);
       } else {
-        response = await fetch(`${API_URL}/auth/me`, {
+        const fetchResponse = await fetch(requestConfig.url, {
           method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${this.token}`,
-            'Content-Type': 'application/json'
-          }
+          headers: requestConfig.headers,
         });
+        response = {
+          status: fetchResponse.status,
+          data: await fetchResponse.json()
+        };
+      }
+
+      if (response.status === 200 && response.data) {
+        this.userData = response.data;
+        console.log('✅ Datos del usuario cargados desde el servidor:', this.userData);
         
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        // Normalizar fechas del servidor si vienen en diferentes formatos
+        console.log('🔍 Buscando campos de fecha en los datos del servidor...');
+        console.log('  - createdAt:', this.userData.createdAt);
+        console.log('  - created_at:', this.userData.created_at);
+        console.log('  - accountCreatedAt:', this.userData.accountCreatedAt);
+        console.log('  - registeredAt:', this.userData.registeredAt);
+        
+        if (this.userData.createdAt) {
+          this.userData.createdAt = new Date(this.userData.createdAt);
+          console.log('📅 Usando createdAt:', this.userData.createdAt);
+        } else if (this.userData.created_at) {
+          this.userData.createdAt = new Date(this.userData.created_at);
+          console.log('📅 Usando created_at:', this.userData.createdAt);
+        } else if (this.userData.accountCreatedAt) {
+          this.userData.createdAt = new Date(this.userData.accountCreatedAt);
+          console.log('📅 Usando accountCreatedAt:', this.userData.createdAt);
+        } else if (this.userData.registeredAt) {
+          this.userData.createdAt = new Date(this.userData.registeredAt);
+          console.log('📅 Usando registeredAt:', this.userData.createdAt);
+        } else {
+          console.warn('⚠️ No se encontró ningún campo de fecha de creación en los datos del servidor');
         }
         
-        response = { data: await response.json() };
+        if (this.userData.lastLogin) {
+          this.userData.lastLogin = new Date(this.userData.lastLogin);
+        } else if (this.userData.last_login) {
+          this.userData.lastLogin = new Date(this.userData.last_login);
+        }
+      } else {
+        throw new Error('Invalid response from server');
       }
-
-      return response.data;
     } catch (error) {
-      console.error('Error fetching user data from server:', error);
-      throw error;
+      console.warn('⚠️ Could not load data from server, using local data:', error);
+      // Si falla el servidor, usar datos locales del token
+      this.userData = this.getUserDataFromToken();
+      console.log('📝 Usando datos del token JWT:', this.userData);
     }
+    
+    // Siempre mostrar datos (del servidor o locales)
+    this.displayUserData();
+    this.hideLoading();
   }
 
-  displayUserData(userData) {
-    // Información básica del perfil
-    const userName = document.getElementById('userName');
-    const userEmail = document.getElementById('userEmail');
+  getUserDataFromToken() {
+    // Intentar decodificar el JWT para obtener información básica
+    try {
+      const tokenParts = this.token.split('.');
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        // Solo usar datos que realmente existan en el token
+        const userData = {};
+        
+        // Extraer nombre completo
+        if (payload.fullName) userData.fullName = payload.fullName;
+        else if (payload.full_name) userData.fullName = payload.full_name;
+        else if (payload.name) userData.fullName = payload.name;
+        else if (payload.username) userData.fullName = payload.username;
+        else userData.fullName = 'Usuario';
+        
+        // Extraer nombre de usuario
+        if (payload.name) userData.name = payload.name;
+        else if (payload.username) userData.name = payload.username;
+        else userData.name = 'Usuario';
+        
+        // Extraer email
+        if (payload.email) userData.email = payload.email;
+        else userData.email = 'Sin email';
+        
+        // Extraer username
+        if (payload.username) userData.username = payload.username;
+        else if (payload.sub) userData.username = payload.sub;
+        else userData.username = 'usuario';
+        
+        // Extraer rol
+        if (payload.role) userData.role = payload.role;
+        else if (payload.roles) userData.role = Array.isArray(payload.roles) ? payload.roles[0] : payload.roles;
+        else if (payload.authorities) userData.role = Array.isArray(payload.authorities) ? payload.authorities[0] : payload.authorities;
+        else userData.role = 'user';
+        
+        // Extraer fechas - buscar múltiples campos posibles
+        // Buscar fecha de creación de cuenta (NO usar iat que es fecha del token)
+        if (payload.createdAt) {
+          // Si es timestamp en segundos
+          userData.createdAt = typeof payload.createdAt === 'number' && payload.createdAt < 10000000000
+            ? new Date(payload.createdAt * 1000)
+            : new Date(payload.createdAt);
+        } else if (payload.created_at) {
+          userData.createdAt = typeof payload.created_at === 'number' && payload.created_at < 10000000000
+            ? new Date(payload.created_at * 1000)
+            : new Date(payload.created_at);
+        } else if (payload.accountCreatedAt) {
+          userData.createdAt = typeof payload.accountCreatedAt === 'number' && payload.accountCreatedAt < 10000000000
+            ? new Date(payload.accountCreatedAt * 1000)
+            : new Date(payload.accountCreatedAt);
+        } else if (payload.registeredAt) {
+          userData.createdAt = typeof payload.registeredAt === 'number' && payload.registeredAt < 10000000000
+            ? new Date(payload.registeredAt * 1000)
+            : new Date(payload.registeredAt);
+        }
+        // Si no hay fecha de creación en el token, no establecer createdAt
+        // NO usar iat porque es la fecha del token, no de la cuenta
+        
+        // Como fallback, usar la fecha del primer login guardada en localStorage
+        if (!userData.createdAt) {
+          const firstLoginDate = localStorage.getItem("firstLoginDate");
+          if (firstLoginDate) {
+            userData.createdAt = new Date(firstLoginDate);
+            console.log('📅 Usando fecha del primer login como createdAt:', userData.createdAt);
+          }
+        }
+        
+        console.log('Datos extraídos del token:', userData);
+        console.log('Payload completo del token:', payload);
+        return userData;
+      }
+    } catch (error) {
+      console.warn('Could not decode token:', error);
+    }
     
-    if (userName) userName.textContent = userData.name || userData.full_name || 'Usuario';
-    if (userEmail) userEmail.textContent = userData.email || 'No disponible';
-
-    // Mostrar toda la información del usuario de manera organizada
-    this.displayAllUserInfo(userData);
+    // Fallback mínimo cuando no hay token válido
+    return {
+      fullName: 'Usuario',
+      name: 'Usuario',
+      email: 'Sin email',
+      username: 'usuario',
+      role: 'user'
+    };
   }
 
-  displayAllUserInfo(userData) {
-    // Crear una sección para mostrar toda la información del usuario
-    let userInfoSection = document.getElementById('allUserInfo');
+  async displayUserData() {
+    const userNameElement = document.getElementById('userName');
+    const userEmailElement = document.getElementById('userEmail');
+    const userRoleTextElement = document.getElementById('userRoleText');
+    const totalScansElement = document.getElementById('totalScans');
+    const joinDateElement = document.getElementById('joinDate');
+    const lastLoginElement = document.getElementById('lastLogin');
     
-    if (!userInfoSection) {
-      userInfoSection = document.createElement('section');
-      userInfoSection.id = 'allUserInfo';
-      userInfoSection.className = 'all-user-info-section';
-      userInfoSection.innerHTML = `
-        <h3 class="section-title">Información del Usuario</h3>
-        <div id="userDataContainer" class="user-data-container"></div>
-      `;
+    // Nuevos elementos para la sección de información personal
+    const fullNameElement = document.getElementById('fullName');
+    const emailInfoElement = document.getElementById('emailInfo');
+    const roleBadgeElement = document.getElementById('roleBadge');
+    const userSinceInfoElement = document.getElementById('userSinceInfo');
+
+    if (this.userData) {
+      // Actualizar elementos del header
+      if (userNameElement) {
+        userNameElement.textContent = this.userData.name || this.userData.username || 'Usuario';
+      }
       
-      const tokenSection = document.querySelector('.token-section');
-      if (tokenSection && tokenSection.parentNode) {
-        tokenSection.parentNode.insertBefore(userInfoSection, tokenSection);
+      if (userEmailElement) {
+        userEmailElement.textContent = this.userData.email || 'Sin email';
+      }
+      
+      if (userRoleTextElement) {
+        const roleText = this.formatRole(this.userData.role || 'user');
+        userRoleTextElement.textContent = roleText;
+      }
+      
+      if (totalScansElement) {
+        // Mostrar un placeholder mientras se carga
+        totalScansElement.textContent = '...';
+        const totalScans = await this.getTotalScans();
+        totalScansElement.textContent = totalScans;
+        console.log('📊 Total de escaneos:', totalScans);
+      }
+      
+      if (joinDateElement) {
+        if (this.userData.createdAt) {
+          const joinDate = new Date(this.userData.createdAt);
+          if (!isNaN(joinDate.getTime())) {
+            joinDateElement.textContent = this.formatDate(joinDate);
+            console.log('📅 Fecha de creación de cuenta:', joinDate);
+          } else {
+            joinDateElement.textContent = 'Sin registro';
+            console.warn('⚠️ Fecha inválida:', this.userData.createdAt);
+          }
+        } else {
+          joinDateElement.textContent = 'Sin registro';
+          console.log('📅 No hay fecha de creación de cuenta');
+        }
+      }
+      
+      if (lastLoginElement) {
+        if (this.userData.lastLogin) {
+          const lastLogin = new Date(this.userData.lastLogin);
+          lastLoginElement.textContent = this.formatDateTime(lastLogin);
+        } else {
+          lastLoginElement.textContent = 'Sin registro';
+        }
+      }
+      
+      // Actualizar elementos de la sección de información personal
+      if (fullNameElement) {
+        fullNameElement.textContent = this.userData.fullName || this.userData.name || 'Usuario';
+      }
+      
+      if (emailInfoElement) {
+        emailInfoElement.textContent = this.userData.email || 'Sin email';
+      }
+      
+      if (roleBadgeElement) {
+        const roleText = this.formatRole(this.userData.role || 'user');
+        roleBadgeElement.textContent = roleText;
+        roleBadgeElement.className = 'role-badge ' + this.getRoleClass(this.userData.role || 'user');
+      }
+      
+      if (userSinceInfoElement) {
+        if (this.userData.createdAt) {
+          const joinDate = new Date(this.userData.createdAt);
+          if (!isNaN(joinDate.getTime())) {
+            userSinceInfoElement.textContent = this.formatFullDate(joinDate);
+            console.log('📅 Usuario desde (fecha completa):', this.formatFullDate(joinDate));
+          } else {
+            userSinceInfoElement.textContent = 'Fecha no disponible';
+            console.warn('⚠️ Fecha inválida en userSinceInfo:', this.userData.createdAt);
+          }
+        } else {
+          userSinceInfoElement.textContent = 'Fecha no disponible';
+          console.log('📅 No hay fecha de creación en userSinceInfo');
+        }
       }
     }
-
-    const userDataContainer = document.getElementById('userDataContainer');
-    if (userDataContainer) {
-      // Filtrar información sensible
-      const safeData = { ...userData };
-      if (safeData.password) delete safeData.password;
-      if (safeData.token) delete safeData.token;
-      
-      // Crear tarjetas para todos los campos disponibles
-      const userCards = Object.entries(safeData)
-        .filter(([key, value]) => value !== null && value !== undefined)
-        .map(([key, value]) => this.createInfoCard(key, value))
-        .join('');
-
-      userDataContainer.innerHTML = userCards || '<p class="no-additional-data">No hay información disponible.</p>';
-    }
   }
 
-  createInfoCard(key, value) {
-    // Mapear claves a nombres más legibles
-    const keyMappings = {
-      'id': 'ID del Usuario',
-      'fullName': 'Nombre Completo',
-      'role': 'Rol',
-      'permissions': 'Permisos',
-      'iat': 'Fecha de Emisión del Token',
-      'exp': 'Fecha de Expiración del Token',
-      'username': 'Nombre de Usuario',
-      'firstName': 'Nombre',
-      'lastName': 'Apellido',
-      'phone': 'Teléfono',
-      'address': 'Dirección',
-      'city': 'Ciudad',
-      'country': 'País',
-      'zipCode': 'Código Postal',
-      'isActive': 'Usuario Activo',
-      'isVerified': 'Usuario Verificado',
-      'lastLogin': 'Último Inicio de Sesión',
-      'loginCount': 'Número de Inicios de Sesión',
-      'preferences': 'Preferencias',
-      'settings': 'Configuraciones',
-      'subscription': 'Suscripción',
-      'plan': 'Plan',
-      'trialEnd': 'Fin del Período de Prueba',
-      'created_at': 'Fecha de Creación',
-      'updated_at': 'Fecha de Actualización'
+  formatRole(role) {
+    const roleMap = {
+      'admin': 'Administrador',
+      'administrator': 'Administrador',
+      'user': 'Usuario',
+      'moderator': 'Moderador',
+      'premium': 'Premium',
+      'ROLE_ADMIN': 'Administrador',
+      'ROLE_USER': 'Usuario',
+      'ROLE_MODERATOR': 'Moderador',
+      'ROLE_PREMIUM': 'Premium'
     };
-
-    const displayKey = keyMappings[key] || key.charAt(0).toUpperCase() + key.slice(1);
-    const displayValue = this.formatValue(value);
-
-    return `
-      <div class="additional-info-card">
-        <div class="additional-info-icon">
-          ${this.getIconForKey(key)}
-        </div>
-        <div class="additional-info-content">
-          <h4>${displayKey}</h4>
-          <p>${displayValue}</p>
-        </div>
-      </div>
-    `;
+    
+    return roleMap[role] || role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
   }
 
-  formatValue(value) {
-    if (Array.isArray(value)) {
-      if (value.length === 0) return 'Ninguno';
-      return value.join(', ');
-    }
+  getRoleClass(role) {
+    const roleClassMap = {
+      'admin': 'role-admin',
+      'administrator': 'role-admin',
+      'moderator': 'role-moderator',
+      'premium': 'role-premium',
+      'user': 'role-user',
+      'ROLE_ADMIN': 'role-admin',
+      'ROLE_USER': 'role-user',
+      'ROLE_MODERATOR': 'role-moderator',
+      'ROLE_PREMIUM': 'role-premium'
+    };
     
-    if (typeof value === 'boolean') {
-      return value ? 'Sí' : 'No';
-    }
-    
-    if (typeof value === 'number') {
-      // Si es una fecha en formato timestamp
-      if (value > 1000000000 && value < 9999999999) {
-        return new Date(value * 1000).toLocaleString('es-ES');
+    return roleClassMap[role] || 'role-user';
+  }
+
+  formatFullDate(date) {
+    return date.toLocaleDateString('es-ES', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  }
+
+  async getTotalScans() {
+    try {
+      // Obtener el conteo desde el servidor (igual que en historial.js)
+      const token = this.token;
+      if (!token) {
+        console.warn('⚠️ No hay token disponible');
+        return 0;
       }
-      return value.toString();
+
+      let data;
+
+      if (Capacitor.isNativePlatform()) {
+        const response = await CapacitorHttp.get({
+          url: `${API_URL}/plant-classifier/classifications`,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        data = response.data;
+      } else {
+        const response = await fetch(`${API_URL}/plant-classifier/classifications`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          console.warn('⚠️ Error al obtener clasificaciones:', response.status);
+          return 0;
+        }
+        
+        data = await response.json();
+      }
+
+      // El servidor devuelve { count, pages, results }
+      const count = data.count || 0;
+      console.log('✅ Total de clasificaciones obtenido del servidor:', count);
+      return count;
+
+    } catch (error) {
+      console.error('❌ Error al obtener total de escaneos:', error);
+      return 0;
     }
-    
-    if (typeof value === 'object' && value !== null) {
-      return JSON.stringify(value, null, 2);
-    }
-    
-    return value.toString();
   }
 
-  getIconForKey(key) {
-    const iconMappings = {
-      'id': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 12l2 2 4-4"></path>
-        <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
-        <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
-        <path d="M12 3c0 1-1 3-3 3s-3-2-3-3 1-3 3-3 3 2 3 3"></path>
-        <path d="M12 21c0-1 1-3 3-3s3 2 3 3-1 3-3 3-3-2-3-3"></path>
-      </svg>`,
-      'fullName': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>`,
-      'role': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-      </svg>`,
-      'permissions': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 12l2 2 4-4"></path>
-        <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
-        <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
-        <path d="M12 3c0 1-1 3-3 3s-3-2-3-3 1-3 3-3 3 2 3 3"></path>
-        <path d="M12 21c0-1 1-3 3-3s3 2 3 3-1 3-3 3-3-2-3-3"></path>
-      </svg>`,
-      'iat': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12,6 12,12 16,14"></polyline>
-      </svg>`,
-      'exp': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12,6 12,12 16,14"></polyline>
-      </svg>`,
-      'username': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>`,
-      'phone': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-      </svg>`,
-      'address': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-        <circle cx="12" cy="10" r="3"></circle>
-      </svg>`,
-      'isActive': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M9 12l2 2 4-4"></path>
-        <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"></path>
-        <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"></path>
-        <path d="M12 3c0 1-1 3-3 3s-3-2-3-3 1-3 3-3 3 2 3 3"></path>
-        <path d="M12 21c0-1 1-3 3-3s3 2 3 3-1 3-3 3-3-2-3-3"></path>
-      </svg>`,
-      'lastLogin': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"></circle>
-        <polyline points="12,6 12,12 16,14"></polyline>
-      </svg>`
-    };
+  formatDate(date) {
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 30) {
+      return `${diffDays}d`;
+    } else if (diffDays < 365) {
+      return `${Math.floor(diffDays / 30)}m`;
+    } else {
+      return `${Math.floor(diffDays / 365)}a`;
+    }
+  }
 
-    return iconMappings[key] || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-      <line x1="9" y1="9" x2="15" y2="15"></line>
-      <line x1="15" y1="9" x2="9" y2="15"></line>
-    </svg>`;
+  formatDateTime(date) {
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMinutes < 60) {
+      return `Hace ${diffMinutes} min`;
+    } else if (diffHours < 24) {
+      return `Hace ${diffHours}h`;
+    } else if (diffDays < 7) {
+      return `Hace ${diffDays}d`;
+    } else {
+      return date.toLocaleDateString('es-ES', { 
+        day: 'numeric', 
+        month: 'short' 
+      });
+    }
   }
 
   toggleTokenVisibility() {
-    const tokenDisplay = document.getElementById('tokenDisplay');
-    const eyeIcon = document.querySelector('.eye-icon');
+    console.log('🔍 toggleTokenVisibility llamado');
+    console.log('Estado actual tokenVisible:', this.tokenVisible);
+    console.log('Token actual:', this.token ? 'existe' : 'no existe');
     
-    if (!tokenDisplay) return;
-
-    if (tokenDisplay.classList.contains('visible')) {
+    const tokenDisplay = document.getElementById('tokenDisplay');
+    const toggleBtn = document.getElementById('toggleToken');
+    
+    if (!tokenDisplay) {
+      console.error('❌ tokenDisplay NO encontrado');
+      return;
+    }
+    
+    console.log('Texto actual del tokenDisplay:', tokenDisplay.textContent);
+    
+    this.tokenVisible = !this.tokenVisible;
+    
+    if (this.tokenVisible) {
+      // Mostrar el token real
+      tokenDisplay.textContent = this.token || 'No hay token';
+      tokenDisplay.classList.add('visible');
+      console.log('👁️ Token VISIBLE - Nuevo texto:', tokenDisplay.textContent);
+      console.log('Longitud del token:', this.token ? this.token.length : 0);
+    } else {
+      // Ocultar el token
       tokenDisplay.textContent = '••••••••••••••••••••••••••••••••';
       tokenDisplay.classList.remove('visible');
-      eyeIcon.innerHTML = `
-        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-        <circle cx="12" cy="12" r="3"></circle>
-      `;
-    } else {
-      tokenDisplay.textContent = this.token;
-      tokenDisplay.classList.add('visible');
-      eyeIcon.innerHTML = `
-        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-        <line x1="1" y1="1" x2="23" y2="23"></line>
-      `;
+      console.log('🙈 Token OCULTO');
     }
   }
 
   async copyToken() {
     try {
-      await navigator.clipboard.writeText(this.token);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(this.token);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = this.token;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+      }
       
-      // Mostrar feedback visual
-      const copyBtn = document.getElementById('copyToken');
-      const originalText = copyBtn.innerHTML;
-      copyBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="20,6 9,17 4,12"></polyline>
-        </svg>
-        Copiado
-      `;
-      
-      setTimeout(() => {
-        copyBtn.innerHTML = originalText;
-      }, 2000);
+      this.showToast('Token copiado al portapapeles', 'success');
     } catch (error) {
       console.error('Error copying token:', error);
-      alert('No se pudo copiar el token');
+      this.showToast('Error al copiar token', 'error');
     }
   }
 
-  logout() {
-    if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+  showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    
+    Object.assign(toast.style, {
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      background: type === 'success' ? 'var(--success-color)' : 
+                  type === 'error' ? 'var(--error-color)' : 
+                  type === 'warning' ? 'var(--warning-color)' : 'var(--info-color)',
+      color: 'white',
+      padding: '12px 16px',
+      borderRadius: '8px',
+      fontSize: '14px',
+      fontWeight: '500',
+      zIndex: '9999',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+      transform: 'translateX(100%)',
+      transition: 'transform 0.3s ease',
+      maxWidth: '300px',
+      wordWrap: 'break-word'
+    });
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.transform = 'translateX(0)';
+    }, 100);
+
+    setTimeout(() => {
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 300);
+    }, 3000);
+  }
+
+  async logout() {
+    try {
+      this.showToast('Cerrando sesión...', 'info');
+      // Pequeño delay para que se vea el mensaje
+      await new Promise(resolve => setTimeout(resolve, 500));
+      logout(); // Esta función redirige automáticamente
+    } catch (error) {
+      console.error('Error during logout:', error);
+      this.showToast('Error al cerrar sesión', 'error');
+      // Intentar cerrar sesión de todas formas
       logout();
-      window.location.href = './login.html';
     }
   }
 
   showLoading() {
     const loadingState = document.getElementById('loadingState');
-    if (loadingState) {
-      loadingState.classList.remove('hidden');
-    }
+    const errorState = document.getElementById('errorState');
+    
+    if (loadingState) loadingState.style.display = 'flex';
+    if (errorState) errorState.classList.add('hidden');
   }
 
   hideLoading() {
     const loadingState = document.getElementById('loadingState');
-    if (loadingState) {
-      loadingState.classList.add('hidden');
-    }
+    if (loadingState) loadingState.style.display = 'none';
   }
 
   showError() {
+    const loadingState = document.getElementById('loadingState');
     const errorState = document.getElementById('errorState');
-    if (errorState) {
-      errorState.classList.remove('hidden');
-    }
-  }
-
-  hideError() {
-    const errorState = document.getElementById('errorState');
-    if (errorState) {
-      errorState.classList.add('hidden');
-    }
+    
+    if (loadingState) loadingState.style.display = 'none';
+    if (errorState) errorState.classList.remove('hidden');
   }
 
   redirectToLogin() {
-    window.location.href = './login.html';
+    window.location.href = '../pages/login.html';
   }
 }
 
-// Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Account page loaded, initializing AccountManager');
-  try {
-    new AccountManager();
-    console.log('✅ AccountManager initialized successfully');
-  } catch (error) {
-    console.error('❌ Error initializing AccountManager:', error);
-  }
+  new AccountManager();
 });

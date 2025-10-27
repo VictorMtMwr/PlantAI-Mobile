@@ -49,29 +49,45 @@ class HistorialManager {
     }
 
     // Modal event listeners
-    const closeModalBtn = document.getElementById('closeModalBtn');
-    const closeModalBtn2 = document.getElementById('closeModalBtn2');
-    const copyJsonBtn = document.getElementById('copyJsonBtn');
     const modal = document.getElementById('detailsModal');
-
-    if (closeModalBtn) {
-      closeModalBtn.addEventListener('click', () => this.closeModal());
-    }
-
-    if (closeModalBtn2) {
-      closeModalBtn2.addEventListener('click', () => this.closeModal());
-    }
-
-    if (copyJsonBtn) {
-      copyJsonBtn.addEventListener('click', () => this.copyJsonToClipboard());
-    }
 
     if (modal) {
       modal.addEventListener('click', (e) => {
-        if (e.target === modal || e.target.classList.contains('modal-overlay')) {
+        if (e.target.closest('.modal-close-btn')) {
+          this.closeModal();
+        }
+        if (e.target.closest('#toggleJsonBtn')) {
+          this.toggleJsonSection();
+        }
+        if (e.target.closest('#copyJsonBtn')) {
+          this.copyJsonToClipboard();
+        }
+        if (e.target.classList.contains('modal-overlay')) {
           this.closeModal();
         }
       });
+    }
+  }
+
+  toggleJsonSection() {
+    const jsonSection = document.getElementById('jsonSection');
+    const toggleBtn = document.getElementById('toggleJsonBtn');
+    const btnSpan = toggleBtn.querySelector('span');
+    const iconShow = toggleBtn.querySelector('.icon-show');
+    const iconHide = toggleBtn.querySelector('.icon-hide');
+
+    const isHidden = jsonSection.classList.contains('hidden');
+
+    if (isHidden) {
+      jsonSection.classList.remove('hidden');
+      btnSpan.textContent = 'Ocultar JSON';
+      iconShow.classList.add('hidden');
+      iconHide.classList.remove('hidden');
+    } else {
+      jsonSection.classList.add('hidden');
+      btnSpan.textContent = 'Mostrar JSON';
+      iconShow.classList.remove('hidden');
+      iconHide.classList.add('hidden');
     }
   }
 
@@ -137,6 +153,9 @@ class HistorialManager {
     // Asegurar que el estado vacío esté oculto primero
     this.hideEmptyState();
     
+    // Actualizar contador en el header
+    this.updatePlantCount();
+    
     // Solo mostrar estado vacío si count es específicamente 0
     if (this.totalCount === 0) {
       console.log('🎯 Mostrando estado vacío porque totalCount es 0');
@@ -154,6 +173,34 @@ class HistorialManager {
     }
   }
 
+  updatePlantCount() {
+    const countElement = document.getElementById('totalCount');
+    if (countElement) {
+      const count = this.totalCount || 0;
+      const text = count === 1 ? '1 planta' : `${count} plantas`;
+      
+      // Obtener el HTML del icono
+      const iconHtml = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>`;
+      
+      const newContent = iconHtml + text;
+      
+      // Solo actualizar si el contenido cambió
+      if (countElement.innerHTML !== newContent) {
+        // Animación suave del contador
+        countElement.style.transform = 'scale(0.8)';
+        countElement.style.opacity = '0.6';
+        
+        setTimeout(() => {
+          countElement.innerHTML = newContent;
+          countElement.style.transform = 'scale(1)';
+          countElement.style.opacity = '1';
+        }, 150);
+      }
+    }
+  }
+
   renderClassifications() {
     const container = document.getElementById('classificationsContainer');
     if (!container) return;
@@ -168,14 +215,31 @@ class HistorialManager {
   createClassificationCard(classification) {
     console.log('🌱 Datos de clasificación:', classification);
     
-    const date = new Date(classification.created_at || classification.timestamp || Date.now());
-    const formattedDate = date.toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    // Obtener la fecha correcta sin usar Date.now() como fallback
+    const dateValue = classification.created_at || classification.timestamp || classification.createdAt || classification.date;
+    
+    if (!dateValue) {
+      console.warn('⚠️ No se encontró fecha para la clasificación:', classification);
+    }
+    
+    const date = dateValue ? new Date(dateValue) : null;
+    
+    // Formatear fecha con hora y minuto
+    let formattedDate = 'Fecha no disponible';
+    let formattedTime = '';
+    
+    if (date && !isNaN(date.getTime())) {
+      formattedDate = date.toLocaleDateString('es-ES', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      });
+      
+      formattedTime = date.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
 
     // Calcular el porcentaje usando speciesConfidence
     let confidence = 0;
@@ -204,38 +268,30 @@ class HistorialManager {
     
     console.log('📊 speciesConfidence original:', classification.speciesConfidence);
     console.log('📊 Confidence calculado:', confidence);
-    const confidenceColor = this.getConfidenceColor(confidence);
+
+    const plantName = classification.scientific_name || classification.species || classification.plant_name || classification.name || 'Planta Desconocida';
+    const commonName = classification.plant_name || classification.name || classification.common_name || 'Nombre común no disponible';
 
     return `
-      <div class="classification-card">
-        <div class="classification-image">
+      <div class="classification-card" onclick="viewClassificationDetails('${classification.id || classification._id}')">
+        <div class="card-image">
           ${this.createImageElement(classification)}
+          <div class="confidence-badge">${confidence}%</div>
         </div>
         
-        <div class="classification-info">
-          <div class="classification-header">
-            <h3 class="plant-name">${classification.scientific_name || classification.species || classification.plant_name || classification.name || 'Planta Desconocida'}</h3>
-            <div class="confidence-badge" style="background-color: ${confidenceColor}">
-              ${confidence}%
+        <div class="card-content">
+          <h3 class="plant-name">${plantName}</h3>
+          <p class="plant-scientific">${commonName}</p>
+          
+          <div class="card-meta">
+            <div class="classification-datetime">
+              <span class="classification-date">${formattedDate}</span>
+              ${formattedTime ? `<span class="classification-time">${formattedTime}</span>` : ''}
             </div>
+            <button class="view-details" onclick="event.stopPropagation(); viewClassificationDetails('${classification.id || classification._id}')">
+              Ver más
+            </button>
           </div>
-          
-          <div class="classification-details">
-            <p class="scientific-name">${classification.plant_name || classification.name || classification.scientific_name || 'Nombre común no disponible'}</p>
-            <p class="classification-date">${formattedDate}</p>
-          </div>
-          
-          ${this.createAdditionalInfo(classification)}
-        </div>
-        
-        <div class="classification-actions">
-          <button class="action-btn view-btn" onclick="viewClassificationDetails('${classification.id || classification._id}')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-            Ver Detalles
-          </button>
         </div>
       </div>
     `;
@@ -247,10 +303,9 @@ class HistorialManager {
         <img 
           src="${classification.image_url || classification.imagePath || classification.image}" 
           alt="${classification.plant_name || 'Planta'}"
-          class="plant-image"
           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
         />
-        <div class="placeholder-image" style="display: none;">
+        <div class="image-placeholder" style="display: none;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -261,7 +316,7 @@ class HistorialManager {
     }
 
     return `
-      <div class="placeholder-image">
+      <div class="image-placeholder">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
           <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -318,13 +373,25 @@ class HistorialManager {
   sortClassifications(sortBy) {
     switch (sortBy) {
       case 'newest':
-        this.classifications.sort((a, b) => new Date(b.created_at || b.timestamp) - new Date(a.created_at || a.timestamp));
+        this.classifications.sort((a, b) => {
+          const dateA = new Date(a.created_at || a.timestamp || a.createdAt || a.date || 0);
+          const dateB = new Date(b.created_at || b.timestamp || b.createdAt || b.date || 0);
+          return dateB - dateA;
+        });
         break;
       case 'oldest':
-        this.classifications.sort((a, b) => new Date(a.created_at || a.timestamp) - new Date(b.created_at || b.timestamp));
+        this.classifications.sort((a, b) => {
+          const dateA = new Date(a.created_at || a.timestamp || a.createdAt || a.date || 0);
+          const dateB = new Date(b.created_at || b.timestamp || b.createdAt || b.date || 0);
+          return dateA - dateB;
+        });
         break;
       case 'confidence':
-        this.classifications.sort((a, b) => (b.confidence || b.score || 0) - (a.confidence || a.score || 0));
+        this.classifications.sort((a, b) => {
+          const confA = a.speciesConfidence || a.confidence || a.score || 0;
+          const confB = b.speciesConfidence || b.confidence || b.score || 0;
+          return confB - confA;
+        });
         break;
     }
     this.renderClassifications();
@@ -529,29 +596,38 @@ class HistorialManager {
     const modalImage = document.getElementById('modalImage');
     if (!modalImage) return;
 
-    if (classification.image_url || classification.image) {
+    const imageUrl = classification.image_url || classification.imagePath || classification.image;
+    console.log(`🖼️ Intentando cargar imagen desde: ${imageUrl}`);
+
+    if (imageUrl) {
       modalImage.innerHTML = `
         <img 
-          src="${classification.image_url || classification.image}" 
-          alt="${classification.scientific_name || classification.plant_name || 'Planta'}"
-          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+          src="${imageUrl}" 
+          alt="Imagen de ${classification.scientific_name || classification.plant_name || 'Planta'}"
+          class="modal-plant-image"
+          onerror="this.parentElement.innerHTML = this.parentElement.dataset.placeholder;"
         />
-        <div class="placeholder-image" style="display: none;">
+      `;
+      // Guardar el placeholder en un data attribute por si falla la carga
+      modalImage.dataset.placeholder = `
+        <div class="image-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
           </svg>
+          <span>Imagen no disponible</span>
         </div>
       `;
     } else {
       modalImage.innerHTML = `
-        <div class="placeholder-image">
+        <div class="image-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
           </svg>
+          <span>Imagen no disponible</span>
         </div>
       `;
     }
@@ -562,13 +638,8 @@ class HistorialManager {
     if (!mainInfo) return;
 
     const mainFields = [
-      { key: 'scientific_name', label: 'Nombre Científico' },
-      { key: 'plant_name', label: 'Nombre Común' },
-      { key: 'species', label: 'Especie' },
-      { key: 'genus', label: 'Género' },
-      { key: 'family', label: 'Familia' },
-      { key: 'speciesConfidence', label: 'Confianza (%)', format: (value) => `${Math.round(value * 100)}%` },
-      { key: 'created_at', label: 'Fecha de Clasificación', format: (value) => new Date(value).toLocaleString('es-ES') }
+      { key: 'scientific_name', label: 'Especie', icon: '🌿' },
+      { key: 'speciesConfidence', label: 'Confianza', format: (value) => `${Math.round((value <= 1 ? value * 100 : value))}%`, icon: '🎯' },
     ];
 
     const mainInfoHTML = mainFields
@@ -576,40 +647,79 @@ class HistorialManager {
       .map(field => {
         const value = field.format ? field.format(classification[field.key]) : classification[field.key];
         return `
-          <div class="info-item">
-            <div class="info-label">${field.label}</div>
+          <div class="info-card">
+            <div class="info-label">
+              <span class="info-icon">${field.icon}</span>
+              ${field.label}
+            </div>
             <div class="info-value">${value}</div>
           </div>
         `;
       }).join('');
 
-    mainInfo.innerHTML = mainInfoHTML || '<div class="info-item"><div class="info-value">No hay información principal disponible</div></div>';
+    mainInfo.innerHTML = mainInfoHTML || '<div class="info-card"><div class="info-value">No hay información principal disponible</div></div>';
   }
 
   renderTechnicalInfo(classification) {
     const technicalInfo = document.getElementById('technicalInfo');
     if (!technicalInfo) return;
 
-    // Excluir campos ya mostrados en información principal
-    const excludedFields = ['scientific_name', 'plant_name', 'species', 'genus', 'family', 'speciesConfidence', 'created_at', 'image_url', 'image'];
+    // Obtener y formatear la fecha
+    const dateValue = classification.created_at || classification.timestamp || classification.createdAt || classification.date;
+    let formattedDateTime = 'Fecha no disponible';
     
-    const technicalFields = Object.keys(classification)
-      .filter(key => !excludedFields.includes(key))
-      .map(key => ({
-        key,
-        label: this.formatFieldLabel(key),
-        value: this.formatFieldValue(classification[key])
-      }));
+    if (dateValue) {
+      const date = new Date(dateValue);
+      if (!isNaN(date.getTime())) {
+        const dateStr = date.toLocaleDateString('es-ES', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        const timeStr = date.toLocaleTimeString('es-ES', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+        formattedDateTime = `${dateStr} a las ${timeStr}`;
+      }
+    }
 
-    const technicalInfoHTML = technicalFields
-      .map(field => `
-        <div class="info-item">
-          <div class="info-label">${field.label}</div>
-          <div class="info-value">${field.value}</div>
-        </div>
-      `).join('');
+    const relevantFields = [
+      { key: 'id', label: 'ID', format: (value) => value ? value.substring(0, 8) + '...' : 'N/A', icon: '🆔' },
+      { key: 'dateTime', label: 'Fecha y Hora', value: formattedDateTime, icon: '📅' },
+      { key: 'shapeConfidence', label: 'Confianza Forma', format: (value) => `${Math.round((value <= 1 ? value * 100 : value))}%`, icon: '📐' },
+      { key: 'shape', label: 'Forma', icon: '💠' },
+      { key: 'status', label: 'Estado', icon: '🚦' }
+    ];
 
-    technicalInfo.innerHTML = technicalInfoHTML || '<div class="info-item"><div class="info-value">No hay información técnica disponible</div></div>';
+    const technicalInfoHTML = relevantFields
+      .filter(field => {
+        // Para el campo dateTime, usar el valor predefinido
+        if (field.key === 'dateTime') return true;
+        // Para los demás, verificar si existen en classification
+        return classification[field.key] !== undefined && classification[field.key] !== null;
+      })
+      .map(field => {
+        let value;
+        // Si es dateTime, usar el valor predefinido
+        if (field.key === 'dateTime') {
+          value = field.value;
+        } else {
+          value = field.format ? field.format(classification[field.key]) : classification[field.key];
+        }
+        return `
+          <div class="info-card">
+            <div class="info-label">
+              <span class="info-icon">${field.icon}</span>
+              ${field.label}
+            </div>
+            <div class="info-value">${value}</div>
+          </div>
+        `;
+      }).join('');
+
+    technicalInfo.innerHTML = technicalInfoHTML || '<div class="info-card"><div class="info-value">No hay información técnica relevante</div></div>';
   }
 
   renderJsonData(classification) {
@@ -663,7 +773,7 @@ class HistorialManager {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="20,6 9,17 4,12"></polyline>
         </svg>
-        ¡Copiado!
+        Copiado
       `;
       
       setTimeout(() => {

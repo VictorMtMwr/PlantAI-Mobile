@@ -1,166 +1,113 @@
-// Carousel functionality
+// Carousel rebuilt: robust implementation using container width to avoid partial offsets
 document.addEventListener('DOMContentLoaded', () => {
-  const track = document.querySelector('.carousel-track');
-  const slides = Array.from(track.children);
-  const nextButton = document.getElementById('nextSlide');
-  const prevButton = document.getElementById('prevSlide');
-  const indicators = document.querySelectorAll('.indicator');
-  
-  let currentSlide = 0;
+  const container = document.querySelector('.carousel-container');
+  if (!container) return;
+
+  const track = container.querySelector('.carousel-track');
+  const slides = Array.from(track.querySelectorAll('.carousel-slide'));
+  const prevButton = container.querySelector('#prevSlide') || container.querySelector('.prev');
+  const nextButton = container.querySelector('#nextSlide') || container.querySelector('.next');
+  const indicatorsContainer = document.querySelector('.carousel-indicators');
+
+  if (!track || slides.length === 0 || !indicatorsContainer) {
+    console.error('Carousel: elementos faltantes');
+    return;
+  }
+
+  let currentIndex = 0;
+  let autoplayTimer = null;
   const slideCount = slides.length;
+  // Ensure track has transition in CSS; set here as fallback
+  track.style.transition = track.style.transition || 'transform 0.45s ease-in-out';
 
-  // Update carousel position with better mobile support
-  const updateCarousel = (index) => {
-    currentSlide = index;
-    
-    console.log('🎠 Updating carousel to slide:', currentSlide, 'of', slideCount);
-    
-    // Hide all slides first
-    slides.forEach((slide, i) => {
-      slide.classList.remove('active');
-      slide.style.display = 'none';
-      slide.style.opacity = '0';
-      console.log('🎠 Hiding slide:', i);
-    });
-    
-    // Show current slide
-    if (slides[currentSlide]) {
-      slides[currentSlide].classList.add('active');
-      slides[currentSlide].style.display = 'flex';
-      slides[currentSlide].style.opacity = '1';
-      console.log('🎠 Showing slide:', currentSlide);
-    } else {
-      console.error('🎠 Slide not found:', currentSlide);
-    }
-    
-    // Update indicators
-    indicators.forEach((indicator, i) => {
-      indicator.classList.toggle('active', i === currentSlide);
-    });
-    
-    console.log('🎠 Carousel updated to slide:', currentSlide);
+  // Prefer the inner visible wrapper width when present (handles padding/margins)
+  const wrapper = container.querySelector('.carousel-wrapper') || container;
+  const getVisibleWidth = () => wrapper.clientWidth || wrapper.getBoundingClientRect().width || container.clientWidth;
+
+  const goTo = (index) => {
+    if (index >= slideCount) index = 0;
+    if (index < 0) index = slideCount - 1;
+    const width = getVisibleWidth();
+    track.style.transform = `translateX(-${width * index}px)`;
+    updateIndicators(index);
+    currentIndex = index;
   };
 
-  // Next slide
-  if (nextButton) {
-    nextButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      console.log('🎠 Next button clicked');
-      const nextSlide = (currentSlide + 1) % slideCount;
-      updateCarousel(nextSlide);
+  // Indicators
+  indicatorsContainer.innerHTML = '';
+  for (let i = 0; i < slideCount; i++) {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'indicator' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Ir a la diapositiva ${i + 1}`);
+    dot.addEventListener('click', () => {
+      goTo(i);
+      resetAutoplay();
     });
-  } else {
-    console.warn('🎠 Next button not found');
+    indicatorsContainer.appendChild(dot);
   }
 
-  // Previous slide
-  if (prevButton) {
-    prevButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      console.log('🎠 Previous button clicked');
-      const prevSlide = (currentSlide - 1 + slideCount) % slideCount;
-      updateCarousel(prevSlide);
-    });
-  } else {
-    console.warn('🎠 Previous button not found');
-  }
+  const indicators = Array.from(indicatorsContainer.children);
+  const updateIndicators = (target) => {
+    indicators.forEach((d, idx) => d.classList.toggle('active', idx === target));
+  };
 
-  // Indicator clicks
-  indicators.forEach((indicator, index) => {
-    indicator.addEventListener('click', (e) => {
-      e.preventDefault();
-      console.log('🎠 Indicator clicked:', index);
-      updateCarousel(index);
-    });
+  // Buttons
+  prevButton?.addEventListener('click', (e) => {
+    e?.preventDefault();
+    goTo(currentIndex - 1);
+    resetAutoplay();
   });
-  
-  console.log('🎠 Carousel initialized with', slideCount, 'slides');
-  console.log('🎠 Found indicators:', indicators.length);
-  
-  // Initialize carousel - show first slide
-  if (slideCount > 0) {
-    console.log('🎠 Initializing carousel with first slide');
-    // Use setTimeout to ensure DOM is ready
-    setTimeout(() => {
-      updateCarousel(0);
-    }, 100);
-  } else {
-    console.warn('🎠 No slides found in carousel');
-  }
-
-  // Auto-play carousel every 5 seconds
-  let autoPlayInterval = setInterval(() => {
-    const nextSlide = (currentSlide + 1) % slideCount;
-    updateCarousel(nextSlide);
-  }, 5000);
-
-  // Pause auto-play on hover
-  const carouselContainer = document.querySelector('.carousel-container');
-  carouselContainer?.addEventListener('mouseenter', () => {
-    clearInterval(autoPlayInterval);
+  nextButton?.addEventListener('click', (e) => {
+    e?.preventDefault();
+    goTo(currentIndex + 1);
+    resetAutoplay();
   });
 
-  carouselContainer?.addEventListener('mouseleave', () => {
-    autoPlayInterval = setInterval(() => {
-      const nextSlide = (currentSlide + 1) % slideCount;
-      updateCarousel(nextSlide);
+  // Swipe support (touch)
+  let startX = 0;
+  let startY = 0;
+  track.addEventListener('touchstart', (e) => {
+    const t = e.changedTouches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    clearAutoplay();
+  }, { passive: true });
+
+  track.addEventListener('touchend', (e) => {
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX;
+    const dy = t.clientY - startY;
+    // horizontal swipe
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      if (dx < 0) goTo(currentIndex + 1);
+      else goTo(currentIndex - 1);
+    }
+    resetAutoplay();
+  }, { passive: true });
+
+  // Autoplay
+  const startAutoplay = () => {
+    clearAutoplay();
+    autoplayTimer = setInterval(() => {
+      goTo(currentIndex + 1);
     }, 5000);
-  });
-
-  // Touch swipe support for mobile
-  let touchStartX = 0;
-  let touchEndX = 0;
-  let touchStartY = 0;
-  let touchEndY = 0;
-
-  if (track) {
-    track.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-      console.log('🎠 Touch start:', touchStartX, touchStartY);
-    }, { passive: false });
-
-    track.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
-
-    track.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      touchEndX = e.changedTouches[0].screenX;
-      touchEndY = e.changedTouches[0].screenY;
-      console.log('🎠 Touch end:', touchEndX, touchEndY);
-      handleSwipe();
-    }, { passive: false });
-  }
-
-  const handleSwipe = () => {
-    const deltaX = touchEndX - touchStartX;
-    const deltaY = touchEndY - touchStartY;
-    
-    // Only handle horizontal swipes
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-      if (deltaX > 0) {
-        // Swipe right - previous slide
-        console.log('🎠 Swipe right - previous slide');
-        const prevSlide = (currentSlide - 1 + slideCount) % slideCount;
-        updateCarousel(prevSlide);
-      } else {
-        // Swipe left - next slide
-        console.log('🎠 Swipe left - next slide');
-        const nextSlide = (currentSlide + 1) % slideCount;
-        updateCarousel(nextSlide);
-      }
-    }
   };
+  const clearAutoplay = () => { if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; } };
+  const resetAutoplay = () => { clearAutoplay(); startAutoplay(); };
 
-  // Navigation tabs
-  const navTabs = document.querySelectorAll('.nav-tab');
-  navTabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      e.preventDefault();
-      navTabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-    });
+  // Resize handler - keep same slide visible
+  let resizeTimeout = null;
+  window.addEventListener('resize', () => {
+    // debounce
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      // reapply transform using new width
+      goTo(currentIndex);
+    }, 80);
   });
+
+  // Start
+  goTo(0);
+  startAutoplay();
 });

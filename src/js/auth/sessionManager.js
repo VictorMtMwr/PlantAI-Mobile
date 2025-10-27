@@ -79,10 +79,13 @@ export function requireAuth() {
 
 // Función para obtener el token actual
 export function getCurrentToken() {
-  if (!hasValidSession()) {
-    return null;
-  }
-  
   const rememberMe = localStorage.getItem("rememberMe");
-  return rememberMe === "true" ? localStorage.getItem('token') : sessionStorage.getItem('token');
+  const token = rememberMe === "true" ? localStorage.getItem('token') : sessionStorage.getItem('token');
+  return token;
 }
+
+// Alias para compatibilidad
+export function getToken() {
+  return getCurrentToken();
+}
+

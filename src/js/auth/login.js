@@ -54,6 +54,11 @@ function saveLoginData(token, rememberMe, email) {
   localStorage.removeItem("token");
   sessionStorage.removeItem("token");
   
+  // Guardar la fecha del primer login si no existe (aproximación de cuenta creada)
+  if (!localStorage.getItem("firstLoginDate")) {
+    localStorage.setItem("firstLoginDate", new Date().toISOString());
+  }
+  
   if (rememberMe) {
     // Si "Mantener sesión iniciada" está marcado, usar localStorage (persistente)
     localStorage.setItem("token", token);
@@ -131,9 +136,13 @@ export function hasValidSession() {
 
 // Función para cerrar sesión
 export function logout() {
+  // Limpiar todos los datos de sesión
   localStorage.removeItem("token");
   localStorage.removeItem("tokenData");
   localStorage.removeItem("rememberMe");
   localStorage.removeItem("userEmail");
   sessionStorage.removeItem("token");
+  
+  // Redirigir al login
+  window.location.href = './login.html';
 }

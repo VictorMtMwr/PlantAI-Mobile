@@ -1,4 +1,5 @@
 import { API_URL, isNativePlatform } from '../core/config.js';
+import { getToken } from '../auth/sessionManager.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   const closeModalButton = document.getElementById("closeModal");
@@ -17,8 +18,13 @@ export async function sendToServer(fileBlob) {
   if (modal) modal.classList.remove("hidden");
   if (resultText) resultText.textContent = "Procesando imagen...";
 
-  const token = localStorage.getItem("token");
-  if (!token) return alert("No hay sesión activa");
+  // Obtener token correctamente usando la función centralizada
+  const token = getToken();
+  
+  if (!token) {
+    alert("No hay sesión activa");
+    return;
+  }
 
   try {
     const formData = new FormData();

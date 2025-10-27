@@ -4,12 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PlantAI - Home</title>
+  
+  <!-- Script CRÍTICO: Aplicar tema ANTES de que se renderice -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('plantai-theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+  </script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/theme.css" />
 </head>
-<body class="home-page">
+<body class="home-page classification-page">
   <!-- Main Content Container -->
   <main class="home-container">
     <!-- Logo Section -->
@@ -23,40 +36,40 @@
 
     <!-- Carousel Section -->
     <section class="carousel-section">
-      <div class="carousel-container">
-        <button class="carousel-btn prev" id="prevSlide">‹</button>
+      <div class="carousel-container rebuilt">
+        <button class="carousel-btn rebuilt prev" id="prevSlide" aria-label="Anterior">‹</button>
         <div class="carousel-wrapper">
-          <div class="carousel-track">
+          <div class="carousel-track rebuilt">
             <!-- Slide 1 -->
-            <div class="carousel-slide active">
-              <div class="slide-content">
+            <div class="carousel-slide rebuilt">
+              <div class="slide-content rebuilt">
                 <h2>Bienvenido a PlantAI</h2>
                 <p>Identifica plantas con inteligencia artificial</p>
               </div>
             </div>
             <!-- Slide 2 -->
-            <div class="carousel-slide">
-              <div class="slide-content">
+            <div class="carousel-slide rebuilt">
+              <div class="slide-content rebuilt">
                 <h2>Análisis Instantáneo</h2>
                 <p>Obtén resultados precisos en segundos</p>
               </div>
             </div>
             <!-- Slide 3 -->
-            <div class="carousel-slide">
-              <div class="slide-content">
+            <div class="carousel-slide rebuilt">
+              <div class="slide-content rebuilt">
                 <h2>Historial Completo</h2>
                 <p>Guarda y revisa todas tus clasificaciones</p>
               </div>
             </div>
           </div>
         </div>
-        <button class="carousel-btn next" id="nextSlide">›</button>
+        <button class="carousel-btn rebuilt next" id="nextSlide" aria-label="Siguiente">›</button>
       </div>
       <!-- Carousel Indicators -->
-      <div class="carousel-indicators">
-        <span class="indicator active" data-slide="0"></span>
-        <span class="indicator" data-slide="1"></span>
-        <span class="indicator" data-slide="2"></span>
+      <div class="carousel-indicators rebuilt" role="tablist" aria-label="Indicadores del carrusel">
+        <button class="indicator rebuilt active" data-slide="0" aria-label="Ir a la diapositiva 1"></button>
+        <button class="indicator rebuilt" data-slide="1" aria-label="Ir a la diapositiva 2"></button>
+        <button class="indicator rebuilt" data-slide="2" aria-label="Ir a la diapositiva 3"></button>
       </div>
     </section>
 
@@ -91,7 +104,7 @@
 
       <!-- Classify Button (shown after image selected) -->
       <button id="classifyButton" class="classify-btn hidden">
-        Clasificar Planta
+        <span>Clasificar Planta</span>
       </button>
     </section>
 
@@ -118,34 +131,42 @@
     </div>
   </div>
 
-  <!-- Horizontal Navigation Panel - Bottom -->
-  <nav class="horizontal-nav bottom-nav">
-    <a href="#inicio" class="nav-tab active" data-tab="inicio">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        <polyline points="9,22 9,12 15,12 15,22"></polyline>
-      </svg>
-      <span>Inicio</span>
+  <!-- Navigation Bar -->
+  <nav class="bottom-navigation">
+    <a href="classification.html" class="nav-item active">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9,22 9,12 15,12 15,22"></polyline>
+        </svg>
+      </div>
+      <span class="nav-label">Inicio</span>
     </a>
-    <a href="historial.html" class="nav-tab" data-tab="historial">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-        <polyline points="14,2 14,8 20,8"></polyline>
-        <line x1="16" y1="13" x2="8" y2="13"></line>
-        <line x1="16" y1="17" x2="8" y2="17"></line>
-        <polyline points="10,9 9,9 8,9"></polyline>
-      </svg>
-      <span>Historial</span>
+    <a href="historial.html" class="nav-item">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14,2 14,8 20,8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+      </div>
+      <span class="nav-label">Historial</span>
     </a>
-    <a href="account.html" class="nav-tab" data-tab="cuenta">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
-      <span>Mi Cuenta</span>
+    <a href="account.html" class="nav-item">
+      <div class="nav-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <span class="nav-label">Mi Cuenta</span>
     </a>
   </nav>
 
+  <!-- Theme Manager debe cargarse PRIMERO -->
+  <script src="../js/theme/themeManager.js"></script>
+  
   <script type="module" src="../js/main.js"></script>
   <script src="../js/carousel.js"></script>
   <script type="module">
