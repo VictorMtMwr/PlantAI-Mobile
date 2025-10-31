@@ -18,8 +18,7 @@ app.use(
     changeOrigin: true,
     secure: false,
     logLevel: "debug",
-    // API usa prefijo /api → mapeamos explícitamente /api -> /api
-    pathRewrite: { "^/api": "/api" },
+    // No reescribir el path; el backend ya expone /api
   })
 );
 
