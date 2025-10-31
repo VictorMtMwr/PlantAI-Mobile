@@ -18,6 +18,15 @@ app.use(
     changeOrigin: true,
     secure: false,
     logLevel: "debug",
+    timeout: 30000,
+    proxyTimeout: 30000,
+    onError(err, req, res) {
+      console.error('🔴 Proxy error:', err.message);
+      if (!res.headersSent) {
+        res.writeHead(502, { 'Content-Type': 'application/json' });
+      }
+      res.end(JSON.stringify({ error: 'Bad gateway', details: err.message }));
+    },
     // No reescribir el path; el backend ya expone /api
   })
 );

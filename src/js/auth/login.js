@@ -25,12 +25,18 @@ export function initLogin() {
         });
         data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
       } else {
-        const res = await fetch(`${API_URL}/auth/login`, {
+        const targetUrl = `${API_URL}/auth/login`;
+        console.log('🔗 Login request →', targetUrl);
+        const res = await fetch(targetUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
         });
-        if (!res.ok) throw new Error(await res.text());
+        if (!res.ok) {
+          const errorText = await res.text().catch(() => '(sin cuerpo)');
+          console.error('❌ Login HTTP error:', { status: res.status, statusText: res.statusText, url: res.url, body: errorText });
+          throw new Error(`HTTP ${res.status} ${res.statusText}: ${errorText}`);
+        }
         data = await res.json();
       }
 
@@ -44,7 +50,8 @@ export function initLogin() {
 
     } catch (error) {
       console.error("❌ Error en login:", error);
-      alert("❌ Credenciales inválidas o error en el servidor");
+      const message = (error && error.message) ? error.message : String(error);
+      alert(`❌ Error al iniciar sesión: ${message}`);
     }
   });
 }
