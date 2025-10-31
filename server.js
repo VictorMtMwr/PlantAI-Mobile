@@ -17,6 +17,9 @@ app.use(
     target: "http://plantai.lab.utb.edu.co:5000", // Tu API real (HTTP)
     changeOrigin: true,
     secure: false,
+    logLevel: "debug",
+    // API usa prefijo /api → mapeamos explícitamente /api -> /api
+    pathRewrite: { "^/api": "/api" },
   })
 );
 
