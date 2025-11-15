@@ -5,7 +5,7 @@ node_modules/
 dist/
 build/
 www/
-package-lock.json
+# package-lock.json - Incluido para builds consistentes en producción
 
 # Capacitor build output
 ios/App/build/
@@ -57,7 +57,7 @@ out/
 # -------------------------------
 # ⚡️ Ionic / Capacitor config
 # -------------------------------
-capacitor.config.json
+# capacitor.config.json - Incluido, necesario para el proyecto
 capacitor.config.ts
 capacitor.config.dev.json
 

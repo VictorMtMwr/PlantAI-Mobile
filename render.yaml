@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: plantai-mobile
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /
+    plan: free
+
