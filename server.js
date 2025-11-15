@@ -11,18 +11,27 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ✅ Proxy para tu API externa (debe estar ANTES de otros middlewares)
-// Configurar el proxy con filtro explícito
-const proxyOptions = {
+// Usar app.use("/api", ...) para que Express maneje el prefijo
+const proxyMiddleware = createProxyMiddleware({
   target: "https://plantai.lab.utb.edu.co", // Backend con SSL
   changeOrigin: true,
   secure: true, // El backend tiene SSL válido
   logLevel: "debug",
   timeout: 30000,
   proxyTimeout: 30000,
-  // Asegurar que todos los métodos HTTP se reenvíen correctamente
+  // Reescribir el path para incluir /api de nuevo
+  // Cuando Express usa app.use("/api", ...), remueve el /api del path
+  // Entonces /api/v1/auth/login se convierte en /v1/auth/login
+  // Necesitamos volver a agregar /api para que el backend reciba /api/v1/auth/login
+  pathRewrite: {
+    '^/': '/api/', // Agregar /api/ al principio del path
+  },
   onProxyReq: (proxyReq, req, res) => {
-    // Log para debugging
-    console.log(`🔄 Proxy REQUEST: ${req.method} ${req.url} -> https://plantai.lab.utb.edu.co${proxyReq.path}`);
+    // Log para debugging - mostrar la URL completa
+    const targetUrl = `https://plantai.lab.utb.edu.co${proxyReq.path}`;
+    console.log(`🔄 Proxy REQUEST: ${req.method} ${req.url} -> ${targetUrl}`);
+    console.log(`   Original path: ${req.path}`);
+    console.log(`   Proxied path: ${proxyReq.path}`);
   },
   onProxyRes: (proxyRes, req, res) => {
     // Agregar headers CORS en la respuesta del proxy
@@ -41,20 +50,11 @@ const proxyOptions = {
     }
     res.end(JSON.stringify({ error: 'Bad gateway', details: err.message }));
   },
-};
-
-// Crear el middleware del proxy con filtro
-const proxyMiddleware = createProxyMiddleware({
-  ...proxyOptions,
-  filter: (pathname, req) => {
-    const shouldProxy = pathname.startsWith('/api');
-    console.log(`🔍 Proxy filter: ${req.method} ${pathname} -> ${shouldProxy ? 'PROXY' : 'SKIP'}`);
-    return shouldProxy;
-  },
 });
 
-// Aplicar el proxy ANTES de cualquier otro middleware
-app.use(proxyMiddleware);
+// Aplicar el proxy a todas las rutas que empiecen con /api
+// Esto preserva automáticamente la ruta completa (/api/v1/...)
+app.use("/api", proxyMiddleware);
 
 // Middleware para logging de todas las peticiones (después del proxy)
 app.use((req, res, next) => {
