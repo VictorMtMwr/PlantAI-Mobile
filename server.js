@@ -10,6 +10,24 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// ✅ Configurar CORS para permitir peticiones desde el frontend
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Permitir cualquier origen (o puedes especificar solo plantai-mobile.onrender.com)
+  res.header("Access-Control-Allow-Origin", origin || "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  
+  // Manejar preflight requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  
+  next();
+});
+
 // ✅ Proxy para tu API HTTP externa
 app.use(
   "/api",
