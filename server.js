@@ -28,16 +28,21 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Proxy para tu API HTTP externa
+// ✅ Proxy para tu API externa
+// Intenta primero con HTTPS, si falla usa HTTP
 app.use(
   "/api",
   createProxyMiddleware({
-    target: "http://plantai.lab.utb.edu.co:5000", // Tu API real (HTTP)
+    target: "https://plantai.lab.utb.edu.co", // Intentar primero con HTTPS (puerto 443 por defecto)
     changeOrigin: true,
-    secure: false,
+    secure: false, // Permitir certificados autofirmados si es necesario
     logLevel: "debug",
     timeout: 30000,
     proxyTimeout: 30000,
+    onProxyReq: (proxyReq, req, res) => {
+      // Log para debugging
+      console.log(`🔄 Proxy: ${req.method} ${req.url} -> ${proxyReq.path}`);
+    },
     onError(err, req, res) {
       console.error('🔴 Proxy error:', err.message);
       if (!res.headersSent) {
