@@ -10,39 +10,49 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware para logging de todas las peticiones
+app.use((req, res, next) => {
+  console.log(`📥 Request: ${req.method} ${req.url}`);
+  next();
+});
+
 // ✅ Proxy para tu API externa (debe estar ANTES de otros middlewares)
-app.use(
-  "/api",
-  createProxyMiddleware({
-    target: "https://plantai.lab.utb.edu.co", // Backend con SSL
-    changeOrigin: true,
-    secure: true, // El backend tiene SSL válido
-    logLevel: "debug",
-    timeout: 30000,
-    proxyTimeout: 30000,
-    // Asegurar que todos los métodos HTTP se reenvíen correctamente
-    onProxyReq: (proxyReq, req, res) => {
-      // Log para debugging
-      console.log(`🔄 Proxy: ${req.method} ${req.url} -> https://plantai.lab.utb.edu.co${proxyReq.path}`);
-    },
-    onProxyRes: (proxyRes, req, res) => {
-      // Agregar headers CORS en la respuesta del proxy
-      proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || '*';
-      proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
-      console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.method} ${req.url}`);
-    },
-    onError(err, req, res) {
-      console.error('🔴 Proxy error:', err.message);
-      if (!res.headersSent) {
-        res.writeHead(502, { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': req.headers.origin || '*'
-        });
-      }
-      res.end(JSON.stringify({ error: 'Bad gateway', details: err.message }));
-    },
-  })
-);
+// Usar /api/* para asegurar que capture todas las subrutas
+const proxyMiddleware = createProxyMiddleware({
+  target: "https://plantai.lab.utb.edu.co", // Backend con SSL
+  changeOrigin: true,
+  secure: true, // El backend tiene SSL válido
+  logLevel: "debug",
+  timeout: 30000,
+  proxyTimeout: 30000,
+  // Asegurar que todos los métodos HTTP se reenvíen correctamente
+  onProxyReq: (proxyReq, req, res) => {
+    // Log para debugging
+    console.log(`🔄 Proxy: ${req.method} ${req.url} -> https://plantai.lab.utb.edu.co${proxyReq.path}`);
+    console.log(`   Headers:`, JSON.stringify(req.headers, null, 2));
+  },
+  onProxyRes: (proxyRes, req, res) => {
+    // Agregar headers CORS en la respuesta del proxy
+    proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || '*';
+    proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
+    console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.method} ${req.url}`);
+  },
+  onError(err, req, res) {
+    console.error('🔴 Proxy error:', err.message);
+    console.error('   Stack:', err.stack);
+    if (!res.headersSent) {
+      res.writeHead(502, { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': req.headers.origin || '*'
+      });
+    }
+    res.end(JSON.stringify({ error: 'Bad gateway', details: err.message }));
+  },
+});
+
+// Aplicar el proxy a todas las rutas que empiecen con /api
+// El proxy maneja automáticamente todos los métodos HTTP (GET, POST, PUT, DELETE, OPTIONS, etc.)
+app.use("/api", proxyMiddleware);
 
 // ✅ Configurar CORS para archivos estáticos (después del proxy)
 app.use((req, res, next) => {
