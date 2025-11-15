@@ -1,0 +1,23 @@
+{
+  "appId": "com.utb.plantaimobile",
+  "appName": "PlantAI Mobile",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "capacitor",
+    "cleartext": true,
+    "allowNavigation": [
+      "plantai.lab.utb.edu.co"
+    ]
+  },
+  "android": {
+    "allowMixedContent": true
+  },
+  "plugins": {
+    "Camera": {
+      "saveToGallery": false
+    },
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}
