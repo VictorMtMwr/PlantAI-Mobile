@@ -14,6 +14,7 @@ export default defineConfig({
         classification: resolve(__dirname, "src/pages/classification.html"),
         historial: resolve(__dirname, "src/pages/historial.html"),
         account: resolve(__dirname, "src/pages/account.html"),
+        about: resolve(__dirname, "src/pages/about.html"),
       },
     },
   },
@@ -21,9 +22,21 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/api": {
-        target: "http://plantai.lab.utb.edu.co:5000",
+        target: "https://plantai.lab.utb.edu.co",
         changeOrigin: true,
-        secure: false,
+        secure: true,
+        rewrite: (path) => path, // Mantener la ruta completa incluyendo /api
+        configure: (proxy, _options) => {
+          proxy.on('error', (err, _req, _res) => {
+            console.log('proxy error', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            console.log('Sending Request to the Target:', req.method, req.url);
+          });
+          proxy.on('proxyRes', (proxyRes, req, _res) => {
+            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+          });
+        },
       },
     },
   },

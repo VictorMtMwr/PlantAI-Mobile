@@ -1,12 +1,10 @@
 {
   "name": "plantai",
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "start": "node server.js"
+    "preview": "vite preview"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
@@ -23,8 +21,6 @@
     "@capacitor/haptics": "^7.0.2",
     "@capacitor/keyboard": "^7.0.3",
     "@capacitor/preferences": "^7.0.2",
-    "@capacitor/status-bar": "^7.0.3",
-    "express": "^4.19.2",
-    "http-proxy-middleware": "^3.0.5"
+    "@capacitor/status-bar": "^7.0.3"
   }
 }

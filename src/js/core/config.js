@@ -4,10 +4,12 @@ export const isNativePlatform = Capacitor.isNativePlatform();
 export const isLocal = window.location.hostname === "localhost" || window.location.hostname.includes("192.168.");
 
 // En plataforma nativa, siempre usar URL completa con protocolo
-// En web (local y producción), usar ruta relativa para que pase por el proxy del servidor (evita CORS)
+// En web, usar ruta relativa para desarrollo local (proxy de Vite) o URL completa para producción
 export const API_URL = isNativePlatform
   ? "https://plantai.lab.utb.edu.co/api/v1" // En nativo siempre URL completa
-  : "/api/v1"; // En web, usar proxy del servidor para evitar CORS (Vite en local, Express en producción)
+  : isLocal
+    ? "/api/v1" // En web local, usar proxy de Vite
+    : "https://plantai.lab.utb.edu.co/api/v1"; // En web producción, URL completa
 
 console.log("🔍 Plataforma nativa:", isNativePlatform);
 console.log("🔍 isLocal:", isLocal);
