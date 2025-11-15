@@ -410,6 +410,22 @@ class AccountManager {
       if (response.status === 200 && response.data) {
         this.userData = response.data;
         console.log('✅ Datos del usuario cargados desde el servidor:', this.userData);
+        console.log('🔍 Rol del usuario desde la API:', this.userData.role);
+        console.log('🔍 Todos los campos disponibles:', Object.keys(this.userData));
+        
+        // Asegurar que el rol se obtenga correctamente de la API
+        if (!this.userData.role) {
+          console.warn('⚠️ El campo "role" no está presente en la respuesta de la API');
+          console.log('🔍 Buscando variantes del campo role:', {
+            role: this.userData.role,
+            userRole: this.userData.userRole,
+            user_role: this.userData.user_role,
+            roles: this.userData.roles,
+            userType: this.userData.userType
+          });
+        } else {
+          console.log('✅ Rol encontrado en la API:', this.userData.role);
+        }
         
         // Normalizar fechas del servidor si vienen en diferentes formatos
         console.log('🔍 Buscando campos de fecha en los datos del servidor...');
@@ -612,9 +628,20 @@ class AccountManager {
       }
       
       if (roleBadgeElement) {
-        const roleText = this.formatRole(this.userData.role || 'user');
-        roleBadgeElement.textContent = roleText;
-        roleBadgeElement.className = 'role-badge ' + this.getRoleClass(this.userData.role || 'user');
+        // Usar el rol de la API, no un valor por defecto
+        const userRole = this.userData.role;
+        if (userRole) {
+          const roleText = this.formatRole(userRole);
+          console.log('🔍 Rol del usuario desde API:', userRole, '-> Formateado:', roleText);
+          roleBadgeElement.textContent = roleText;
+          roleBadgeElement.className = 'role-badge ' + this.getRoleClass(userRole);
+        } else {
+          console.warn('⚠️ No se encontró el campo "role" en los datos del usuario');
+          roleBadgeElement.textContent = 'No disponible';
+          roleBadgeElement.className = 'role-badge role-user';
+        }
+      } else {
+        console.warn('⚠️ No se encontró el elemento roleBadgeElement');
       }
       
       if (userSinceInfoElement) {
@@ -636,35 +663,49 @@ class AccountManager {
   }
 
   formatRole(role) {
+    if (!role) return 'Usuario';
+    
+    // Normalizar el rol a minúsculas para la búsqueda
+    const normalizedRole = role.toLowerCase();
+    
     const roleMap = {
       'admin': 'Administrador',
       'administrator': 'Administrador',
       'user': 'Usuario',
       'moderator': 'Moderador',
       'premium': 'Premium',
-      'ROLE_ADMIN': 'Administrador',
-      'ROLE_USER': 'Usuario',
-      'ROLE_MODERATOR': 'Moderador',
-      'ROLE_PREMIUM': 'Premium'
+      'contributor': 'Contribuidor',
+      'role_admin': 'Administrador',
+      'role_user': 'Usuario',
+      'role_moderator': 'Moderador',
+      'role_premium': 'Premium',
+      'role_contributor': 'Contribuidor'
     };
     
-    return roleMap[role] || role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
+    return roleMap[normalizedRole] || role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
   }
 
   getRoleClass(role) {
+    if (!role) return 'role-user';
+    
+    // Normalizar el rol a minúsculas para la búsqueda
+    const normalizedRole = role.toLowerCase();
+    
     const roleClassMap = {
       'admin': 'role-admin',
       'administrator': 'role-admin',
       'moderator': 'role-moderator',
       'premium': 'role-premium',
       'user': 'role-user',
-      'ROLE_ADMIN': 'role-admin',
-      'ROLE_USER': 'role-user',
-      'ROLE_MODERATOR': 'role-moderator',
-      'ROLE_PREMIUM': 'role-premium'
+      'contributor': 'role-contributor',
+      'role_admin': 'role-admin',
+      'role_user': 'role-user',
+      'role_moderator': 'role-moderator',
+      'role_premium': 'role-premium',
+      'role_contributor': 'role-contributor'
     };
     
-    return roleClassMap[role] || 'role-user';
+    return roleClassMap[normalizedRole] || 'role-user';
   }
 
   formatFullDate(date) {

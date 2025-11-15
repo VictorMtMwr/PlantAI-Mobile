@@ -8,7 +8,12 @@ import { hasValidSession, logout } from './login.js';
 export function initSessionCheck() {
   // Verificar sesión al cargar la página
   if (!hasValidSession()) {
-    redirectToLogin();
+    // Solo redirigir si no estamos ya en la página de login
+    const currentPath = window.location.pathname;
+    if (!currentPath.includes('login.html') && !currentPath.includes('register.html')) {
+      redirectToLogin();
+      return false;
+    }
     return false;
   }
   
@@ -61,6 +66,12 @@ function showSessionExpiredNotification() {
 }
 
 export function redirectToLogin() {
+  // Solo redirigir si no estamos ya en la página de login o register
+  const currentPath = window.location.pathname;
+  if (currentPath.includes('login.html') || currentPath.includes('register.html')) {
+    return; // Ya estamos en login/register, no redirigir
+  }
+  
   // Limpiar datos de sesión antes de redirigir
   logout();
   

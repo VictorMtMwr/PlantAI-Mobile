@@ -23,60 +23,85 @@
   <link rel="stylesheet" href="../css/theme.css" />
 </head>
 <body class="about-page">
-  <main class="about-container">
-    <section class="about-hero">
-      <div class="about-logo">
-        <img src="../img/logo.png" alt="PlantAI Logo" class="app-logo" />
-      </div>
-      <h1 class="about-title">Acerca de PlantAI</h1>
-      <p class="about-subtitle">Identifica plantas con inteligencia artificial, fácil y rápido.</p>
-    </section>
-
-    <section class="about-app card-section">
-      <h2 class="section-title">La aplicación</h2>
-      <div class="card">
-        <p>
-          PlantAI te permite capturar o subir una foto de una planta para identificarla
-          al instante utilizando modelos de inteligencia artificial. Guarda tus
-          clasificaciones, consulta tu historial y explora tus registros cuando quieras.
-        </p>
-        <ul class="about-list">
-          <li>Identificación rápida y precisa</li>
-          <li>Historial de clasificaciones</li>
-          <li>Modo claro y oscuro</li>
-          <li>Optimizada para web y móvil (Capacitor)</li>
-        </ul>
-        <div class="about-meta">
-          <span class="meta-item">Versión: 1.0.0</span>
+  <!-- Main Content Container -->
+  <main class="about-page-container">
+    <!-- Header Section -->
+    <section class="about-header-section">
+      <div class="about-header-card">
+        <div class="about-header-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
         </div>
+        <h1 class="about-main-title">Acerca de PlantAI</h1>
       </div>
     </section>
 
-    <section class="about-devs card-section">
-      <h2 class="section-title">Desarrolladores</h2>
-      <div class="devs-grid">
-        <div class="dev-card">
-          <div class="dev-avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+    <!-- About Content Section -->
+    <section class="about-content-section">
+      <div class="about-card gradient-card">
+        <div class="about-content">
+          <div class="about-description">
+            <p>
+              PlantAI es una aplicación móvil innovadora que utiliza inteligencia artificial 
+              para identificar y clasificar plantas. Nuestra aplicación permite a los usuarios 
+              tomar fotografías de plantas y obtener información detallada sobre su especie, 
+              forma y estado de salud.
+            </p>
+            <p>
+              Con tecnología de machine learning avanzada, PlantAI ayuda a investigadores, 
+              agricultores y entusiastas de la botánica a identificar plantas de manera rápida 
+              y precisa, contribuyendo a la conservación y estudio de la biodiversidad.
+            </p>
           </div>
-          <div class="dev-info">
-            <h3 class="dev-name">Equipo PlantAI</h3>
-            <p class="dev-role">Desarrollo y Diseño</p>
+          
+          <div class="developers-section">
+            <h4 class="developers-title">Equipo de Desarrollo</h4>
+            <div class="developers-grid">
+              <div class="developer-card" data-developer="victor">
+                <div class="developer-image clickable">
+                  <img src="../img/developers/victor.jpg" alt="Víctor Martínez" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 200%27%3E%3Ccircle cx=%27100%27 cy=%27100%27 r=%2780%27 fill=%27%2310b981%27/%3E%3Ctext x=%27100%27 y=%27120%27 font-size=%2760%27 text-anchor=%27middle%27 fill=%27white%27%3EVM%3C/text%3E%3C/svg%3E';">
+                </div>
+                <div class="developer-info">
+                  <h5>Víctor Martínez</h5>
+                  <p class="developer-role">Desarrollador</p>
+                </div>
+              </div>
+              
+              <div class="developer-card" data-developer="santiago">
+                <div class="developer-image clickable">
+                  <img src="../img/developers/santiago-payares.jpg" alt="Santiago Payares" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 200%27%3E%3Ccircle cx=%27100%27 cy=%27100%27 r=%2780%27 fill=%27%2310b981%27/%3E%3Ctext x=%27100%27 y=%27120%27 font-size=%2760%27 text-anchor=%27middle%27 fill=%27white%27%3ESP%3C/text%3E%3C/svg%3E';">
+                </div>
+                <div class="developer-info">
+                  <h5>Santiago Payares</h5>
+                  <p class="developer-role">Desarrollador</p>
+                </div>
+              </div>
+              
+              <div class="developer-card" data-developer="julian">
+                <div class="developer-image clickable">
+                  <img src="../img/developers/julian-camacho.jpg" alt="Julián Camacho" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 200%27%3E%3Ccircle cx=%27100%27 cy=%27100%27 r=%2780%27 fill=%27%2310b981%27/%3E%3Ctext x=%27100%27 y=%27120%27 font-size=%2760%27 text-anchor=%27middle%27 fill=%27white%27%3EJC%3C/text%3E%3C/svg%3E';">
+                </div>
+                <div class="developer-info">
+                  <h5>Julián Camacho</h5>
+                  <p class="developer-role">Desarrollador</p>
+                </div>
+              </div>
+              
+              <div class="developer-card" data-developer="camilo">
+                <div class="developer-image clickable">
+                  <img src="../img/developers/camilo-naufal.jpg" alt="Camilo Naufal" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 200 200%27%3E%3Ccircle cx=%27100%27 cy=%27100%27 r=%2780%27 fill=%27%23f59e0b%27/%3E%3Ctext x=%27100%27 y=%27120%27 font-size=%2760%27 text-anchor=%27middle%27 fill=%27white%27%3ECN%3C/text%3E%3C/svg%3E';">
+                </div>
+                <div class="developer-info">
+                  <h5>Camilo Naufal</h5>
+                  <p class="developer-role">Profesor</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="about-contact card-section">
-      <h2 class="section-title">Contacto</h2>
-      <div class="card">
-        <p>
-          ¿Tienes ideas o encontraste un problema? Contáctanos en
-          <a href="mailto:soporte@plantai.com">soporte@plantai.com</a>.
-        </p>
       </div>
     </section>
   </main>
@@ -115,25 +140,50 @@
     <a href="about.html" class="nav-item active">
       <div class="nav-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="12" y1="8" x2="12" y2="12"></line>
-          <circle cx="12" cy="16" r="1"></circle>
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
         </svg>
       </div>
       <span class="nav-label">Acerca de</span>
     </a>
   </nav>
 
+  <!-- Developer Details Modal -->
+  <div id="developerModal" class="developer-modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close-btn" id="closeModal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="modal-header">
+        <div class="modal-image-container">
+          <img id="modalDeveloperImage" src="" alt="Developer" />
+        </div>
+        <h2 id="modalDeveloperName" class="modal-name"></h2>
+      </div>
+      <div class="modal-body">
+        <div class="modal-role-section">
+          <p id="modalDeveloperRole" class="modal-role"></p>
+        </div>
+        <div class="modal-section">
+          <h3 class="modal-section-title">Formación Académica</h3>
+          <p id="modalEducation" class="modal-text"></p>
+        </div>
+        <div class="modal-section">
+          <h3 class="modal-section-title">Rol en el Proyecto</h3>
+          <p id="modalResponsibilities" class="modal-text"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Theme Manager debe cargarse PRIMERO -->
   <script src="../js/theme/themeManager.js"></script>
-  <script type="module">
-    document.addEventListener('DOMContentLoaded', function() {
-      import('../js/navigation/universalNavigation.js').then(module => {
-        module.initUniversalNavigation();
-      });
-    });
-  </script>
+  <script type="module" src="../js/about/about.js"></script>
 </body>
 </html>
-
 

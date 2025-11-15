@@ -2,6 +2,17 @@ import { API_URL, isNativePlatform } from '../core/config.js';
 import { CapacitorHttp } from '@capacitor/core';
 
 export function initLogin() {
+  // Verificar si hay una sesión válida con "Mantener sesión iniciada" activado
+  // Si es así, redirigir directamente a classification.html
+  if (hasValidSession()) {
+    const rememberMe = localStorage.getItem("rememberMe");
+    if (rememberMe === "true") {
+      console.log("✅ Sesión válida encontrada, redirigiendo a classification.html");
+      window.location.href = "./classification.html";
+      return;
+    }
+  }
+
   const loginForm = document.getElementById("loginForm");
   if (!loginForm) return;
 
@@ -25,18 +36,12 @@ export function initLogin() {
         });
         data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
       } else {
-        const targetUrl = `${API_URL}/auth/login`;
-        console.log('🔗 Login request →', targetUrl);
-        const res = await fetch(targetUrl, {
+        const res = await fetch(`${API_URL}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
         });
-        if (!res.ok) {
-          const errorText = await res.text().catch(() => '(sin cuerpo)');
-          console.error('❌ Login HTTP error:', { status: res.status, statusText: res.statusText, url: res.url, body: errorText });
-          throw new Error(`HTTP ${res.status} ${res.statusText}: ${errorText}`);
-        }
+        if (!res.ok) throw new Error(await res.text());
         data = await res.json();
       }
 
@@ -50,8 +55,7 @@ export function initLogin() {
 
     } catch (error) {
       console.error("❌ Error en login:", error);
-      const message = (error && error.message) ? error.message : String(error);
-      alert(`❌ Error al iniciar sesión: ${message}`);
+      alert("❌ Credenciales inválidas o error en el servidor");
     }
   });
 }
@@ -150,6 +154,9 @@ export function logout() {
   localStorage.removeItem("userEmail");
   sessionStorage.removeItem("token");
   
-  // Redirigir al login
-  window.location.href = './login.html';
+  // Solo redirigir al login si no estamos ya en login o register
+  const currentPath = window.location.pathname;
+  if (!currentPath.includes('login.html') && !currentPath.includes('register.html')) {
+    window.location.href = './login.html';
+  }
 }

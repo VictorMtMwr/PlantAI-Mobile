@@ -26,14 +26,32 @@
     </div>
   </div>
 
-  <script>
-    // Redirige al login después de 3 segundos
-    setTimeout(() => {
-      document.body.style.opacity = '0';
+  <script type="module">
+    // Verificar si hay una sesión válida con "Mantener sesión iniciada"
+    async function checkSessionAndRedirect() {
+      // Importar la función de verificación de sesión
+      const { hasValidSession } = await import('./js/auth/login.js');
+      
+      // Verificar sesión después de 3 segundos
       setTimeout(() => {
-        window.location.href = "./pages/login.html";
-      }, 300);
-    }, 3000);
+        document.body.style.opacity = '0';
+        setTimeout(() => {
+          // Si hay sesión válida y rememberMe está activado, ir a classification
+          if (hasValidSession()) {
+            const rememberMe = localStorage.getItem("rememberMe");
+            if (rememberMe === "true") {
+              console.log("✅ Sesión válida encontrada, redirigiendo a classification.html");
+              window.location.href = "./pages/classification.html";
+              return;
+            }
+          }
+          // Si no hay sesión válida, ir al login
+          window.location.href = "./pages/login.html";
+        }, 300);
+      }, 3000);
+    }
+    
+    checkSessionAndRedirect();
   </script>
 </body>
 </html>

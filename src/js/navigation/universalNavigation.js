@@ -160,7 +160,6 @@ function getCurrentPageName() {
     'classification.html': 'inicio',
     'historial.html': 'historial',
     'account.html': 'cuenta',
-    'about.html': 'about',
     'index.html': 'inicio'
   };
   

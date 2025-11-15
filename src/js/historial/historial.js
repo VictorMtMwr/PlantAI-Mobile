@@ -91,7 +91,12 @@ class HistorialManager {
     }
   }
 
-  async loadClassifications() {
+  async loadClassifications(page = null) {
+    // Si se especifica una página, actualizar currentPage
+    if (page !== null) {
+      this.currentPage = page;
+    }
+
     this.showLoading();
     this.hideError();
     this.hideEmptyState();
@@ -102,19 +107,26 @@ class HistorialManager {
       const token = getCurrentToken();
       if (!token) throw new Error('No token available');
 
+      // Construir URL con parámetros de paginación
+      const pageParam = this.currentPage || 1;
+      const limitParam = this.itemsPerPage || 10;
+      const url = `${API_URL}/plant-classifier/classifications?page=${pageParam}&limit=${limitParam}`;
+
+      console.log('📡 Cargando página:', pageParam, 'URL:', url);
+
       let data;
 
       if (Capacitor.isNativePlatform()) {
         const response = await CapacitorHttp.get({
-          url: `${API_URL}/plant-classifier/classifications`,
+          url: url,
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         });
-        data = response.data;
+        data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
       } else {
-        const response = await fetch(`${API_URL}/plant-classifier/classifications`, {
+        const response = await fetch(url, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -134,6 +146,8 @@ class HistorialManager {
       this.totalPages = data.pages || 1;
       
       console.log('📊 totalCount:', this.totalCount);
+      console.log('📊 totalPages:', this.totalPages);
+      console.log('📊 currentPage:', this.currentPage);
       console.log('📊 classifications length:', this.classifications.length);
 
       this.displayClassifications();
@@ -269,8 +283,25 @@ class HistorialManager {
     console.log('📊 speciesConfidence original:', classification.speciesConfidence);
     console.log('📊 Confidence calculado:', confidence);
 
-    const plantName = classification.scientific_name || classification.species || classification.plant_name || classification.name || 'Planta Desconocida';
-    const commonName = classification.plant_name || classification.name || classification.common_name || 'Nombre común no disponible';
+    // Obtener nombre científico (preferir scientificName, luego scientific_name, luego species)
+    const scientificName = classification.scientificName || classification.scientific_name || classification.species || 'No identificado';
+    
+    // Obtener nombre común (preferir español, luego inglés)
+    // Intentar múltiples variaciones de campos
+    const commonName = classification.commonNameEs 
+      || classification.commonNameEn 
+      || classification.common_name 
+      || classification.commonName
+      || classification.plant_name
+      || classification.name
+      || 'Nombre común no disponible';
+    
+    // Debug: verificar qué campos están disponibles
+    console.log('🔍 Campos disponibles en classification:', Object.keys(classification));
+    console.log('🔍 commonNameEs:', classification.commonNameEs);
+    console.log('🔍 commonNameEn:', classification.commonNameEn);
+    console.log('🔍 common_name:', classification.common_name);
+    console.log('🔍 Nombre común final:', commonName);
 
     return `
       <div class="classification-card" onclick="viewClassificationDetails('${classification.id || classification._id}')">
@@ -280,14 +311,15 @@ class HistorialManager {
         </div>
         
         <div class="card-content">
-          <h3 class="plant-name">${plantName}</h3>
-          <p class="plant-scientific">${commonName}</p>
-          
-          <div class="card-meta">
+          <div class="card-info">
+            <h3 class="plant-name">${scientificName}</h3>
+            <p class="plant-common">${commonName}</p>
             <div class="classification-datetime">
               <span class="classification-date">${formattedDate}</span>
               ${formattedTime ? `<span class="classification-time">${formattedTime}</span>` : ''}
             </div>
+          </div>
+          <div class="card-actions">
             <button class="view-details" onclick="event.stopPropagation(); viewClassificationDetails('${classification.id || classification._id}')">
               Ver más
             </button>
@@ -399,22 +431,20 @@ class HistorialManager {
 
   // Métodos de paginación
   calculatePagination() {
-    // totalCount ya viene del API, solo calcular totalPages
-    this.totalPages = Math.ceil(this.totalCount / this.itemsPerPage);
-  }
-
-  getCurrentPageItems() {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    return this.classifications.slice(startIndex, endIndex);
+    // totalPages ya viene del API, no necesitamos calcularlo
+    // Solo asegurarnos de que esté actualizado
+    if (this.totalCount > 0 && this.totalPages === 0) {
+      this.totalPages = Math.ceil(this.totalCount / this.itemsPerPage);
+    }
   }
 
   renderClassifications() {
     const container = document.getElementById('classificationsContainer');
     if (!container) return;
 
-    const currentPageItems = this.getCurrentPageItems();
-    const classificationsHTML = currentPageItems.map(classification =>
+    // El backend ya devuelve solo los items de la página actual
+    // No necesitamos hacer slice, usamos directamente this.classifications
+    const classificationsHTML = this.classifications.map(classification =>
       this.createClassificationCard(classification)
     ).join('');
 
@@ -500,9 +530,8 @@ class HistorialManager {
 
   goToPage(page) {
     if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
-      this.currentPage = page;
-      this.renderClassifications();
-      this.updatePagination();
+      // Cargar los datos de la nueva página desde el API
+      this.loadClassifications(page);
     }
   }
 
@@ -637,25 +666,47 @@ class HistorialManager {
     const mainInfo = document.getElementById('mainInfo');
     if (!mainInfo) return;
 
-    const mainFields = [
-      { key: 'scientific_name', label: 'Especie', icon: '🌿' },
-      { key: 'speciesConfidence', label: 'Confianza', format: (value) => `${Math.round((value <= 1 ? value * 100 : value))}%`, icon: '🎯' },
-    ];
+    // Nombre científico (predicho) con confianza
+    const scientificName = classification.scientificName || classification.scientific_name || 'No identificado';
+    const confidence = classification.speciesConfidence !== undefined && classification.speciesConfidence !== null
+      ? Math.round((classification.speciesConfidence <= 1 ? classification.speciesConfidence * 100 : classification.speciesConfidence))
+      : null;
+    const plantNameWithConfidence = confidence !== null 
+      ? `${scientificName} (${confidence}%)`
+      : scientificName;
 
-    const mainInfoHTML = mainFields
-      .filter(field => classification[field.key] !== undefined && classification[field.key] !== null)
-      .map(field => {
-        const value = field.format ? field.format(classification[field.key]) : classification[field.key];
-        return `
-          <div class="info-card">
-            <div class="info-label">
-              <span class="info-icon">${field.icon}</span>
-              ${field.label}
-            </div>
-            <div class="info-value">${value}</div>
-          </div>
-        `;
-      }).join('');
+    // Nombre común (preferir español, luego inglés)
+    const commonName = classification.commonNameEs || classification.commonNameEn || classification.common_name || 'Nombre común no disponible';
+
+    // Estado de salud
+    const isHealthy = classification.isHealthy !== undefined ? classification.isHealthy : classification.taggedHealthy;
+    const healthStatus = isHealthy === true ? 'Healthy' : isHealthy === false ? 'Diseased' : 'No determinado';
+    const healthIcon = isHealthy === true ? '✅' : isHealthy === false ? '❌' : '❓';
+    const healthColor = isHealthy === true ? 'var(--success-color)' : isHealthy === false ? '#ef4444' : 'var(--text-secondary)';
+
+    const mainInfoHTML = `
+      <div class="info-card">
+        <div class="info-label">
+          <span class="info-icon">🌿</span>
+          Especie (Predicho)
+        </div>
+        <div class="info-value">${plantNameWithConfidence}</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">
+          <span class="info-icon">🏷️</span>
+          Nombre Común
+        </div>
+        <div class="info-value">${commonName}</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">
+          <span class="info-icon">${healthIcon}</span>
+          Estado de Salud
+        </div>
+        <div class="info-value" style="color: ${healthColor}; font-weight: 600;">${healthStatus}</div>
+      </div>
+    `;
 
     mainInfo.innerHTML = mainInfoHTML || '<div class="info-card"><div class="info-value">No hay información principal disponible</div></div>';
   }

@@ -80,11 +80,18 @@ body {
 }
 
 /* Contenedores principales */
-.container, .home-container, .auth-container {
+.container, .auth-container {
   background-color: var(--bg-container);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   box-shadow: 0 4px 6px var(--shadow-color);
+}
+
+.home-container {
+  background-color: transparent;
+  color: var(--text-primary);
+  border: none;
+  box-shadow: none;
 }
 
 /* Inputs mejorados */
@@ -211,7 +218,7 @@ p, span, div {
 .theme-toggle {
   position: fixed;
   top: 20px;
-  right: 20px;
+  left: 20px;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -265,25 +272,62 @@ p, span, div {
 }
 
 /* Estilos específicos para páginas principales con el nuevo fondo */
-.home-page, .classification-page, .historial-page, .account-page {
-  background-image: url('../img/background.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+.home-page, .classification-page, .historial-page, .account-page, .about-page {
+  position: relative;
   min-height: 100vh;
+  background-color: var(--bg-primary);
 }
 
-/* Overlay para mejorar legibilidad en páginas con fondo */
-.home-page::before, .classification-page::before, .historial-page::before, .account-page::before {
+/* Imagen de fondo con pseudo-elemento para aplicar filtros */
+.home-page::after, .classification-page::after, .historial-page::after, .account-page::after, .about-page::after {
   content: '';
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--overlay-bg);
+  background-image: url('../img/background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  z-index: -2;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+  filter: brightness(1.1) contrast(1.05);
+  opacity: 0.9;
+}
+
+/* Filtro para tema oscuro - imagen más oscura y con menos saturación */
+[data-theme="dark"] .home-page::after,
+[data-theme="dark"] .classification-page::after,
+[data-theme="dark"] .historial-page::after,
+[data-theme="dark"] .account-page::after,
+[data-theme="dark"] .about-page::after {
+  filter: brightness(0.3) contrast(1.2) saturate(0.7);
+  opacity: 0.8;
+}
+
+/* Overlay para mejorar legibilidad en páginas con fondo - Adaptado a temas claro y oscuro */
+.home-page::before, .classification-page::before, .historial-page::before, .account-page::before, .about-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.1);
   z-index: -1;
+  transition: background-color 0.3s ease;
+  pointer-events: none;
+}
+
+/* Overlay más oscuro en tema oscuro para mejor contraste */
+[data-theme="dark"] .home-page::before,
+[data-theme="dark"] .classification-page::before,
+[data-theme="dark"] .historial-page::before,
+[data-theme="dark"] .account-page::before,
+[data-theme="dark"] .about-page::before {
+  background-color: rgba(15, 23, 42, 0.4);
 }
 
 /* Las páginas de auth mantienen su fondo original */
@@ -313,7 +357,7 @@ p, span, div {
 @media (max-width: 768px) {
   .theme-toggle {
     top: 16px;
-    right: 16px;
+    left: 16px;
     width: 52px;
     height: 52px;
     font-size: 20px;
