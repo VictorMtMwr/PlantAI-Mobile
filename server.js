@@ -10,15 +10,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware para logging de todas las peticiones
-app.use((req, res, next) => {
-  console.log(`📥 Request: ${req.method} ${req.url}`);
-  next();
-});
-
 // ✅ Proxy para tu API externa (debe estar ANTES de otros middlewares)
-// Usar /api/* para asegurar que capture todas las subrutas
-const proxyMiddleware = createProxyMiddleware({
+// Configurar el proxy con filtro explícito
+const proxyOptions = {
   target: "https://plantai.lab.utb.edu.co", // Backend con SSL
   changeOrigin: true,
   secure: true, // El backend tiene SSL válido
@@ -28,17 +22,16 @@ const proxyMiddleware = createProxyMiddleware({
   // Asegurar que todos los métodos HTTP se reenvíen correctamente
   onProxyReq: (proxyReq, req, res) => {
     // Log para debugging
-    console.log(`🔄 Proxy: ${req.method} ${req.url} -> https://plantai.lab.utb.edu.co${proxyReq.path}`);
-    console.log(`   Headers:`, JSON.stringify(req.headers, null, 2));
+    console.log(`🔄 Proxy REQUEST: ${req.method} ${req.url} -> https://plantai.lab.utb.edu.co${proxyReq.path}`);
   },
   onProxyRes: (proxyRes, req, res) => {
     // Agregar headers CORS en la respuesta del proxy
     proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || '*';
     proxyRes.headers['Access-Control-Allow-Credentials'] = 'true';
-    console.log(`✅ Proxy response: ${proxyRes.statusCode} for ${req.method} ${req.url}`);
+    console.log(`✅ Proxy RESPONSE: ${proxyRes.statusCode} for ${req.method} ${req.url}`);
   },
   onError(err, req, res) {
-    console.error('🔴 Proxy error:', err.message);
+    console.error('🔴 Proxy ERROR:', err.message);
     console.error('   Stack:', err.stack);
     if (!res.headersSent) {
       res.writeHead(502, { 
@@ -48,11 +41,26 @@ const proxyMiddleware = createProxyMiddleware({
     }
     res.end(JSON.stringify({ error: 'Bad gateway', details: err.message }));
   },
+};
+
+// Crear el middleware del proxy con filtro
+const proxyMiddleware = createProxyMiddleware({
+  ...proxyOptions,
+  filter: (pathname, req) => {
+    const shouldProxy = pathname.startsWith('/api');
+    console.log(`🔍 Proxy filter: ${req.method} ${pathname} -> ${shouldProxy ? 'PROXY' : 'SKIP'}`);
+    return shouldProxy;
+  },
 });
 
-// Aplicar el proxy a todas las rutas que empiecen con /api
-// El proxy maneja automáticamente todos los métodos HTTP (GET, POST, PUT, DELETE, OPTIONS, etc.)
-app.use("/api", proxyMiddleware);
+// Aplicar el proxy ANTES de cualquier otro middleware
+app.use(proxyMiddleware);
+
+// Middleware para logging de todas las peticiones (después del proxy)
+app.use((req, res, next) => {
+  console.log(`📥 Request: ${req.method} ${req.url}`);
+  next();
+});
 
 // ✅ Configurar CORS para archivos estáticos (después del proxy)
 app.use((req, res, next) => {
