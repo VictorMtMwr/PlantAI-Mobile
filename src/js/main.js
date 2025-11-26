@@ -4,6 +4,7 @@ import { initRegister } from './auth/register.js';
 import { initCamera } from './camera/cameraHandler.js';
 import { initGallery } from './camera/galleryHandler.js';
 import { initAnimations } from './utils/animations.js';
+import { initEasterEgg } from './utils/easterEgg.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   // Solo inicializar login en la página de login
@@ -24,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isClassificationPage) {
     initCamera();
     initGallery();
+    // Inicializar easter egg en la página de clasificación
+    initEasterEgg();
   }
   
   // Inicializar animaciones en todas las páginas

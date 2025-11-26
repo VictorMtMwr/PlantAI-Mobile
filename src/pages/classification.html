@@ -76,7 +76,17 @@
 
     <!-- Classify Section -->
     <section class="classify-section">
-      <h2 class="section-title">Clasifica tu planta</h2>
+      <div class="section-header-with-help">
+        <h2 class="section-title" data-i18n="classify.title">Clasifica tu planta</h2>
+        <button id="howToUseBtn" class="how-to-use-btn" data-i18n-title="classify.howToUse" title="Cómo usar la aplicación">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span data-i18n="classify.howToUse">Cómo usar</span>
+        </button>
+      </div>
       
       <!-- Action Buttons -->
       <div class="action-buttons">
@@ -85,7 +95,7 @@
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
             <circle cx="12" cy="13" r="4"></circle>
           </svg>
-          <span>Usar Cámara</span>
+          <span data-i18n="classify.useCamera">Usar Cámara</span>
         </button>
         
         <button id="selectImage" class="action-btn gallery-btn">
@@ -94,7 +104,7 @@
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
             <polyline points="21 15 16 10 5 21"></polyline>
           </svg>
-          <span>Galería</span>
+          <span data-i18n="classify.gallery">Galería</span>
         </button>
       </div>
 
@@ -105,7 +115,7 @@
 
       <!-- Classify Button (shown after image selected) -->
       <button id="classifyButton" class="classify-btn hidden">
-        <span>Clasificar Planta</span>
+        <span data-i18n="classify.classifyButton">Clasificar Planta</span>
       </button>
     </section>
 
@@ -128,7 +138,7 @@
     <div class="modal-overlay"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title">Resultado de la Clasificación</h2>
+        <h2 class="modal-title" data-i18n="modal.resultTitle">Resultado de la Clasificación</h2>
         <button class="modal-close-btn" id="closeModal">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -148,12 +158,82 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
               </svg>
-              Información Principal
+              <span data-i18n="modal.mainInfo">Información Principal</span>
             </h3>
             <div id="resultText" class="info-cards">
               <!-- La información se cargará aquí -->
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Cómo Usar -->
+  <div id="howToUseModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content how-to-use-modal">
+      <div class="modal-header">
+        <h2 class="modal-title" data-i18n="howToUse.title">Cómo usar PlantAI</h2>
+        <button class="modal-close-btn" id="closeHowToUseModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="how-to-use-content">
+          <div class="instruction-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3 data-i18n="howToUse.step1.title">Selecciona una imagen</h3>
+              <p data-i18n="howToUse.step1.description">Puedes tomar una foto usando la cámara o seleccionar una imagen desde tu galería. Asegúrate de que la planta esté bien enfocada y visible.</p>
+            </div>
+          </div>
+          
+          <div class="instruction-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3 data-i18n="howToUse.step2.title">Clasifica la planta</h3>
+              <p data-i18n="howToUse.step2.description">Una vez que hayas seleccionado la imagen, presiona el botón "Clasificar Planta" para que nuestra inteligencia artificial analice la imagen.</p>
+            </div>
+          </div>
+          
+          <div class="instruction-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3 data-i18n="howToUse.step3.title">Revisa los resultados</h3>
+              <p data-i18n="howToUse.step3.description">Obtendrás información sobre la especie de la planta, su nombre común, estado de salud y nivel de confianza de la clasificación.</p>
+            </div>
+          </div>
+          
+          <div class="instruction-step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+              <h3 data-i18n="howToUse.step4.title">Obtén recomendaciones</h3>
+              <p data-i18n="howToUse.step4.description">Si la planta está enferma, verás un botón de "Recomendaciones" que te mostrará información sobre enfermedades comunes, síntomas, causas y tratamientos.</p>
+            </div>
+          </div>
+          
+          <div class="instruction-step">
+            <div class="step-number">5</div>
+            <div class="step-content">
+              <h3 data-i18n="howToUse.step5.title">Consulta tu historial</h3>
+              <p data-i18n="howToUse.step5.description">Todas tus clasificaciones se guardan automáticamente en el historial. Puedes acceder a ellas desde la pestaña "Historial" en la navegación inferior.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="how-to-use-tips">
+          <h3 class="tips-title" data-i18n="howToUse.tipsTitle">💡 Consejos para mejores resultados</h3>
+          <ul class="tips-list">
+            <li data-i18n="howToUse.tip1">Asegúrate de tener buena iluminación al tomar la foto</li>
+            <li data-i18n="howToUse.tip2">Enfócate en las hojas y características distintivas de la planta</li>
+            <li data-i18n="howToUse.tip3">Evita imágenes borrosas o con mucho fondo</li>
+            <li data-i18n="howToUse.tip4">Para plantas enfermas, captura las áreas afectadas claramente</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -168,7 +248,7 @@
           <polyline points="9,22 9,12 15,12 15,22"></polyline>
         </svg>
       </div>
-      <span class="nav-label">Inicio</span>
+      <span class="nav-label" data-i18n="nav.home">Inicio</span>
     </a>
     <a href="historial.html" class="nav-item">
       <div class="nav-icon">
@@ -179,7 +259,7 @@
           <line x1="16" y1="17" x2="8" y2="17"></line>
         </svg>
       </div>
-      <span class="nav-label">Historial</span>
+      <span class="nav-label" data-i18n="nav.history">Historial</span>
     </a>
     <a href="account.html" class="nav-item">
       <div class="nav-icon">
@@ -188,7 +268,7 @@
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
       </div>
-      <span class="nav-label">Mi Cuenta</span>
+      <span class="nav-label" data-i18n="nav.account">Mi Cuenta</span>
     </a>
     <a href="about.html" class="nav-item">
       <div class="nav-icon">
@@ -198,12 +278,13 @@
           <path d="M2 12l10 5 10-5"></path>
         </svg>
       </div>
-      <span class="nav-label">Acerca de</span>
+      <span class="nav-label" data-i18n="nav.about">Acerca de</span>
     </a>
   </nav>
 
-  <!-- Theme Manager debe cargarse PRIMERO -->
+  <!-- Theme Manager e I18n Manager deben cargarse PRIMERO -->
   <script src="../js/theme/themeManager.js"></script>
+  <script type="module" src="../js/i18n/i18nManager.js"></script>
   
   <script type="module" src="../js/main.js"></script>
   <script src="../js/carousel.js"></script>
@@ -226,6 +307,47 @@
     document.addEventListener('DOMContentLoaded', function() {
       import('../js/navigation/universalNavigation.js').then(module => {
         module.initUniversalNavigation();
+      });
+    });
+
+    // Manejar modal de Cómo Usar
+    document.addEventListener('DOMContentLoaded', function() {
+      const howToUseBtn = document.getElementById('howToUseBtn');
+      const howToUseModal = document.getElementById('howToUseModal');
+      const closeHowToUseModal = document.getElementById('closeHowToUseModal');
+      const overlay = howToUseModal?.querySelector('.modal-overlay');
+
+      function openHowToUseModal() {
+        if (howToUseModal) {
+          howToUseModal.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeHowToUseModalFunc() {
+        if (howToUseModal) {
+          howToUseModal.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+      }
+
+      if (howToUseBtn) {
+        howToUseBtn.addEventListener('click', openHowToUseModal);
+      }
+
+      if (closeHowToUseModal) {
+        closeHowToUseModal.addEventListener('click', closeHowToUseModalFunc);
+      }
+
+      if (overlay) {
+        overlay.addEventListener('click', closeHowToUseModalFunc);
+      }
+
+      // Cerrar con ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && howToUseModal && !howToUseModal.classList.contains('hidden')) {
+          closeHowToUseModalFunc();
+        }
       });
     });
   </script>

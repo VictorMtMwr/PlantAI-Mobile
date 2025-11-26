@@ -1,23 +1,65 @@
 import { isNativePlatform } from '../core/config.js';
 
+// Función para obtener traducciones
+function getTranslation(key) {
+  const i18n = window.i18nManager || { t: (k) => k };
+  return i18n.t(key);
+}
+
 // Función para obtener la ruta correcta de la imagen según la plataforma
 function getImagePath(relativePath) {
   if (isNativePlatform) {
-    // En Android nativo, las imágenes se sirven desde el directorio assets
-    // Convertir ../img/developers/victor.jpg a /img/developers/victor.jpg
-    const cleanPath = relativePath.replace(/^\.\.\//, '/');
+    // En Android nativo, las imágenes se sirven desde el directorio assets/public
+    // Extraer el nombre del archivo
+    const fileName = relativePath.split('/').pop();
     
-    // Construir la ruta absoluta usando window.location.origin
-    // En Capacitor Android, window.location.origin puede ser 'capacitor://localhost' o 'http://localhost'
+    // En Capacitor Android, las rutas deben ser relativas a la raíz del sitio
+    // window.location.origin puede ser 'capacitor://localhost' o 'http://localhost'
     const basePath = window.location.origin;
-    const absolutePath = `${basePath}${cleanPath}`;
     
-    console.log('🖼️ Ruta de imagen nativa:', absolutePath);
-    console.log('🖼️ window.location:', window.location.href);
-    console.log('🖼️ window.location.origin:', window.location.origin);
+    // Intentar múltiples rutas posibles en Android nativo
+    // Las imágenes están en /img/developers/ en la raíz del sitio
+    const possiblePaths = [
+      `/img/developers/${fileName}`,  // Ruta absoluta desde la raíz (PRIMERA OPCIÓN)
+      `${basePath}/img/developers/${fileName}`, // Ruta completa con basePath
+      `./img/developers/${fileName}`, // Ruta relativa desde la página actual
+      `../img/developers/${fileName}`, // Ruta relativa desde pages/
+      `img/developers/${fileName}`,   // Ruta sin barra inicial
+      relativePath // Ruta original como último recurso
+    ];
+    
+    // Construir rutas absolutas adicionales
+    const absolutePaths = possiblePaths.map(path => {
+      // Limpiar la ruta: remover ./ y ../ del inicio
+      let cleanPath = path;
+      if (path.startsWith('./')) {
+        cleanPath = path.substring(2);
+      } else if (path.startsWith('../')) {
+        cleanPath = path.substring(3);
+      }
+      // Si no comienza con / y no tiene basePath, agregar /
+      if (!cleanPath.startsWith('/') && !cleanPath.startsWith(basePath)) {
+        cleanPath = `/${cleanPath}`;
+      }
+      // Si no tiene basePath, agregarlo
+      if (!cleanPath.startsWith(basePath) && !cleanPath.startsWith('http') && !cleanPath.startsWith('capacitor')) {
+        return `${basePath}${cleanPath}`;
+      }
+      return cleanPath;
+    });
+    
+    // Retornar la primera ruta (ruta relativa simple)
+    const firstPath = possiblePaths[0]; // Usar ruta relativa simple primero
+    console.log('🖼️ Android nativo - Ruta de imagen (primera opción):', firstPath);
+    console.log('🖼️ Rutas alternativas:', absolutePaths);
+    console.log('🖼️ window.location.origin:', basePath);
+    console.log('🖼️ window.location.href:', window.location.href);
     console.log('🖼️ window.location.pathname:', window.location.pathname);
     
-    return absolutePath;
+    // Guardar las rutas alternativas para el error handler
+    window._developerImageFallbackPaths = absolutePaths;
+    
+    return firstPath;
   } else {
     // En web, usar ruta relativa normal
     return relativePath;
@@ -25,34 +67,35 @@ function getImagePath(relativePath) {
 }
 
 // Datos de los desarrolladores (guardamos la ruta relativa original)
+// Los textos se traducen dinámicamente usando getTranslation()
 const developersData = {
   victor: {
     name: 'Víctor Martínez',
-    role: 'ML Developer, Backend Developer, Android Developer & Project Manager',
+    roleKey: 'developer.victor.role',
     imagePath: '../img/developers/victor.jpg',
-    education: 'Ingeniero de Sistemas de la Universidad Tecnológica de Bolívar',
-    responsibilities: 'Desarrollador de Backend y ML Developer, encargado de todo el área de inteligencia artificial del proyecto y construccion de la aplicacion nativa para Android. Responsable del diseño e implementación de los modelos de machine learning para la clasificación de plantas, así como del desarrollo de la arquitectura backend que soporta la aplicación, además de la gestión del proyecto y el equipo de desarrollo.'
+    educationKey: 'developer.victor.education',
+    responsibilitiesKey: 'developer.victor.responsibilities'
   },
   santiago: {
     name: 'Santiago Payares',
-    role: 'Frontend Developer & UX/UI Designer',
+    roleKey: 'developer.santiago.role',
     imagePath: '../img/developers/santiago-payares.jpg',
-    education: 'Ingeniero de Sistemas de la Universidad Tecnológica de Bolívar',
-    responsibilities: 'Desarrollador de Frontend y UX/UI Designer. Responsable del diseño e implementación de la interfaz de usuario y la experiencia del usuario de la aplicación.'
+    educationKey: 'developer.santiago.education',
+    responsibilitiesKey: 'developer.santiago.responsibilities'
   },
   julian: {
     name: 'Julián Camacho',
-    role: 'Documentation & Quality Assurance',
+    roleKey: 'developer.julian.role',
     imagePath: '../img/developers/julian-camacho.jpg',
-    education: 'Ingeniero de Sistemas de la Universidad Tecnológica de Bolívar',
-    responsibilities: 'Desarrollador de documentación. Responsable de la documentación del proyecto y la aseguramiento de calidad de la aplicación.'
+    educationKey: 'developer.julian.education',
+    responsibilitiesKey: 'developer.julian.responsibilities'
   },
   camilo: {
     name: 'Camilo Naufal',
-    role: 'Artificial Vision, AI Expert & Testing',
+    roleKey: 'developer.camilo.role',
     imagePath: '../img/developers/camilo-naufal.jpg',
-    education: 'Información pendiente',
-    responsibilities: 'Responsable guiar las distintas etapas de entrenamiento y pruebas de los modelos aportando sus conocimiento en visión por computadora. También responsable de la prueba de la aplicación.'
+    educationKey: 'developer.camilo.education',
+    responsibilitiesKey: 'developer.camilo.responsibilities'
   }
 };
 
@@ -80,31 +123,60 @@ document.addEventListener('DOMContentLoaded', () => {
       const fallbackPaths = [];
       if (isNativePlatform) {
         const fileName = developer.imagePath.split('/').pop();
-        // Intentar diferentes rutas alternativas
-        fallbackPaths.push(
-          `${window.location.origin}/img/developers/${fileName}`,
-          `./img/developers/${fileName}`,
-          `../img/developers/${fileName}`,
-          `img/developers/${fileName}`
-        );
+        const basePath = window.location.origin;
+        const currentPath = window.location.pathname;
+        const isInPages = currentPath.includes('/pages/');
+        
+        // Usar las rutas alternativas guardadas por getImagePath, o construir nuevas
+        const savedPaths = window._developerImageFallbackPaths || [];
+        if (savedPaths.length > 0) {
+          fallbackPaths.push(...savedPaths);
+        } else {
+          // Construir rutas basadas en la ubicación actual
+          if (isInPages) {
+            // Si estamos en pages/, usar ruta relativa
+            fallbackPaths.push(
+              `../img/developers/${fileName}`,
+              `./img/developers/${fileName}`,
+              `/img/developers/${fileName}`,
+              `${basePath}/img/developers/${fileName}`
+            );
+          } else {
+            // Si estamos en la raíz, usar ruta absoluta
+            fallbackPaths.push(
+              `/img/developers/${fileName}`,
+              `${basePath}/img/developers/${fileName}`,
+              `./img/developers/${fileName}`,
+              `img/developers/${fileName}`
+            );
+          }
+        }
       }
       
       // Manejar errores de carga de imagen con múltiples intentos
       const errorHandler = (function(paths, devName) {
         let attemptCount = 0;
+        const maxAttempts = paths.length + 1; // +1 para el SVG de respaldo
+        
         return function() {
           attemptCount++;
-          console.warn(`Error cargando imagen (intento ${attemptCount}):`, this.src);
+          console.warn(`❌ Error cargando imagen (intento ${attemptCount}/${maxAttempts}):`, this.src);
           
           if (isNativePlatform && attemptCount <= paths.length) {
             const nextPath = paths[attemptCount - 1];
             if (nextPath && this.src !== nextPath) {
-              console.log(`Intentando ruta alternativa ${attemptCount}:`, nextPath);
+              console.log(`🔄 Intentando ruta alternativa ${attemptCount}/${paths.length}:`, nextPath);
               this.src = nextPath;
+            } else if (attemptCount > paths.length) {
+              // Si todas las rutas fallan, usar el SVG de respaldo
+              console.error('❌ Todas las rutas fallaron, usando imagen de respaldo');
+              const initials = devName.split(' ').map(n => n[0]).join('');
+              this.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%2310b981'/%3E%3Ctext x='100' y='120' font-size='60' text-anchor='middle' fill='white'%3E${initials}%3C/text%3E%3C/svg%3E`;
+              this.onerror = null; // Prevenir bucle infinito
             }
           } else {
             // Si todas las rutas fallan, usar el SVG de respaldo
-            console.error('Todas las rutas fallaron, usando imagen de respaldo');
+            console.error('❌ Todas las rutas fallaron, usando imagen de respaldo');
             const initials = devName.split(' ').map(n => n[0]).join('');
             this.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='80' fill='%2310b981'/%3E%3Ctext x='100' y='120' font-size='60' text-anchor='middle' fill='white'%3E${initials}%3C/text%3E%3C/svg%3E`;
             this.onerror = null; // Prevenir bucle infinito
@@ -113,11 +185,26 @@ document.addEventListener('DOMContentLoaded', () => {
       })(fallbackPaths, developer.name);
       
       imageElement.onerror = errorHandler;
+      
+      // Agregar evento onload para confirmar que la imagen se cargó
+      imageElement.onload = function() {
+        console.log('✅ Imagen cargada exitosamente:', this.src);
+      };
+      
+      // Limpiar las rutas guardadas después de usarlas
+      if (window._developerImageFallbackPaths) {
+        delete window._developerImageFallbackPaths;
+      }
     }
     document.getElementById('modalDeveloperName').textContent = developer.name;
-    document.getElementById('modalDeveloperRole').textContent = developer.role;
-    document.getElementById('modalEducation').textContent = developer.education;
-    document.getElementById('modalResponsibilities').textContent = developer.responsibilities;
+    document.getElementById('modalDeveloperRole').textContent = getTranslation(developer.roleKey);
+    document.getElementById('modalEducation').textContent = getTranslation(developer.educationKey);
+    document.getElementById('modalResponsibilities').textContent = getTranslation(developer.responsibilitiesKey);
+    
+    // Traducir la página después de actualizar el modal
+    if (window.i18nManager) {
+      window.i18nManager.translatePage();
+    }
 
     // Mostrar el modal
     modal.classList.remove('hidden');

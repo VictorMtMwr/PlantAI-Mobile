@@ -36,8 +36,8 @@
             <line x1="16" y1="17" x2="8" y2="17"></line>
           </svg>
         </div>
-        <h1 class="historial-title">Historial de Plantas</h1>
-        <p class="historial-subtitle">Registro completo de tus identificaciones</p>
+        <h1 class="historial-title" data-i18n="history.title">Historial de Plantas</h1>
+        <p class="historial-subtitle" data-i18n="history.subtitle">Registro completo de tus identificaciones</p>
       </div>
     </header>
 
@@ -47,8 +47,8 @@
         <div class="loading-spinner">
           <div class="spinner"></div>
         </div>
-        <h3>Cargando historial</h3>
-        <p>Obteniendo tus clasificaciones...</p>
+        <h3 data-i18n="history.loading">Cargando historial</h3>
+        <p data-i18n="history.loadingSubtitle">Obteniendo tus clasificaciones...</p>
       </div>
     </div>
 
@@ -62,16 +62,16 @@
             <line x1="9" y1="9" x2="15" y2="15"></line>
           </svg>
         </div>
-        <h3>Error al cargar el historial</h3>
-        <p>No se pudo obtener el historial. Por favor, intenta nuevamente.</p>
-        <button id="retryBtn" class="retry-btn">
+        <h3 data-i18n="history.errorTitle">Error al cargar el historial</h3>
+        <p data-i18n="history.errorMessage">No se pudo obtener el historial. Por favor, intenta nuevamente.</p>
+        <button id="retryBtn" class="retry-btn" data-i18n="history.retry">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
             <path d="M21 3v5h-5"></path>
             <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
             <path d="M3 21v-5h5"></path>
           </svg>
-          Reintentar
+          <span>Reintentar</span>
         </button>
       </div>
     </div>
@@ -84,14 +84,14 @@
             <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
           </svg>
         </div>
-        <h3>No hay clasificaciones</h3>
-        <p>Aún no has identificado ninguna planta. ¡Comienza tu colección ahora!</p>
-        <button id="startClassifyingBtn" class="start-btn">
+        <h3 data-i18n="history.emptyTitle">No hay clasificaciones</h3>
+        <p data-i18n="history.emptyMessage">Aún no has identificado ninguna planta. ¡Comienza tu colección ahora!</p>
+        <button id="startClassifyingBtn" class="start-btn" data-i18n="history.startClassifying">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
           </svg>
-          Identificar Planta
+          <span>Identificar Planta</span>
         </button>
       </div>
     </div>
@@ -100,19 +100,19 @@
     <section id="classificationsList" class="classifications-section hidden">
       <div class="classifications-header">
         <div class="header-info">
-          <h2 class="section-title">Tus Identificaciones</h2>
+          <h2 class="section-title" data-i18n="history.yourIdentifications">Tus Identificaciones</h2>
           <span id="totalCount" class="count-badge">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
-            0 plantas
+            <span>0 <span data-i18n="history.plants">plantas</span></span>
           </span>
         </div>
         <div class="filter-controls">
           <select id="sortSelect" class="filter-select">
-            <option value="newest">Más recientes</option>
-            <option value="oldest">Más antiguas</option>
-            <option value="confidence">Mayor confianza</option>
+            <option value="newest" data-i18n="history.mostRecent">Más recientes</option>
+            <option value="oldest" data-i18n="history.oldest">Más antiguas</option>
+            <option value="confidence" data-i18n="history.highestConfidence">Mayor confianza</option>
           </select>
         </div>
       </div>
@@ -152,7 +152,7 @@
     <div class="modal-overlay"></div>
     <div class="modal-content">
       <div class="modal-header">
-        <h2 class="modal-title">Detalles de Identificación</h2>
+        <h2 class="modal-title" data-i18n="history.detailsTitle">Detalles de Identificación</h2>
         <button class="modal-close-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -170,22 +170,10 @@
           <div class="modal-section">
             <h3 class="section-header">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-              </svg>
-              Información Principal
-            </h3>
-            <div id="mainInfo" class="info-cards">
-              <!-- Información principal se cargará aquí -->
-            </div>
-          </div>
-          
-          <div class="modal-section">
-            <h3 class="section-header">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
               </svg>
-              Detalles Técnicos
+              <span data-i18n="history.technicalDetails">Detalles Técnicos</span>
             </h3>
             <div id="technicalInfo" class="info-cards">
               <!-- Información técnica se cargará aquí -->
@@ -215,14 +203,14 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon-hide hidden">
                 <polyline points="18 15 12 9 6 15"></polyline>
             </svg>
-            <span>Mostrar JSON</span>
+            <span data-i18n="history.showJSON">Mostrar JSON</span>
         </button>
-        <button id="copyJsonBtn" class="btn-secondary">
+        <button id="copyJsonBtn" class="btn-secondary" data-i18n="history.copy">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            Copiar
+            <span>Copiar</span>
         </button>
       </div>
     </div>
@@ -237,7 +225,7 @@
           <polyline points="9,22 9,12 15,12 15,22"></polyline>
         </svg>
       </div>
-      <span class="nav-label">Inicio</span>
+      <span class="nav-label" data-i18n="nav.home">Inicio</span>
     </a>
     <a href="historial.html" class="nav-item active">
       <div class="nav-icon">
@@ -248,7 +236,7 @@
           <line x1="16" y1="17" x2="8" y2="17"></line>
         </svg>
       </div>
-      <span class="nav-label">Historial</span>
+      <span class="nav-label" data-i18n="nav.history">Historial</span>
     </a>
     <a href="account.html" class="nav-item">
       <div class="nav-icon">
@@ -257,7 +245,7 @@
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
       </div>
-      <span class="nav-label">Mi Cuenta</span>
+      <span class="nav-label" data-i18n="nav.account">Mi Cuenta</span>
     </a>
     <a href="about.html" class="nav-item">
       <div class="nav-icon">
@@ -267,12 +255,13 @@
           <path d="M2 12l10 5 10-5"></path>
         </svg>
       </div>
-      <span class="nav-label">Acerca de</span>
+      <span class="nav-label" data-i18n="nav.about">Acerca de</span>
     </a>
   </nav>
 
   <!-- Theme Manager debe cargarse PRIMERO -->
   <script src="../js/theme/themeManager.js"></script>
+  <script type="module" src="../js/i18n/i18nManager.js"></script>
   
   <script type="module" src="../js/historial/historial.js"></script>
   <script type="module">

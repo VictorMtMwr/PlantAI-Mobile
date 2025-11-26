@@ -281,33 +281,40 @@ class AccountManager {
   }
 
   openSettings() {
+    const i18n = window.i18nManager || { t: (key) => key };
+    const currentLanguage = (window.i18nManager && window.i18nManager.getCurrentLanguage()) || 'es';
+    
     const settingsHTML = `
       <div class="settings-modal">
         <div class="settings-content">
           <div class="settings-header">
-            <h3>Configuraciones</h3>
+            <h3 data-i18n="settings.title">Configuraciones</h3>
             <span class="close-settings">&times;</span>
           </div>
           <div class="settings-body">
             <div class="setting-item">
-              <label>Tema de la aplicación</label>
-              <select id="themeSelect">
-                <option value="light">Claro</option>
-                <option value="dark">Oscuro</option>
-                <option value="auto">Automático</option>
+              <label data-i18n="settings.language">Idioma de la aplicación</label>
+              <select id="languageSelect">
+                <option value="es" ${currentLanguage === 'es' ? 'selected' : ''} data-i18n="settings.spanish">Español</option>
+                <option value="en" ${currentLanguage === 'en' ? 'selected' : ''} data-i18n="settings.english">English</option>
+                <option value="pt" ${currentLanguage === 'pt' ? 'selected' : ''} data-i18n="settings.portuguese">Português</option>
               </select>
             </div>
             <div class="setting-item">
-              <label>Guardar imágenes clasificadas</label>
+              <label data-i18n="settings.appTheme">Tema de la aplicación</label>
+              <select id="themeSelect">
+                <option value="light" data-i18n="settings.light">Claro</option>
+                <option value="dark" data-i18n="settings.dark">Oscuro</option>
+                <option value="auto" data-i18n="settings.auto">Automático</option>
+              </select>
+            </div>
+            <div class="setting-item">
+              <label data-i18n="settings.saveImages">Guardar imágenes clasificadas</label>
               <input type="checkbox" id="saveImages" checked>
             </div>
             <div class="setting-item">
-              <label>Notificaciones</label>
+              <label data-i18n="settings.notifications">Notificaciones</label>
               <input type="checkbox" id="notifications" checked>
-            </div>
-            <div class="setting-item">
-              <label>Limpiar historial de clasificaciones</label>
-              <button id="clearHistory" class="btn-danger">Limpiar Historial</button>
             </div>
           </div>
         </div>
@@ -319,10 +326,30 @@ class AccountManager {
     modal.innerHTML = settingsHTML;
     document.body.appendChild(modal.firstElementChild);
     
+    // Traducir el modal
+    if (window.i18nManager) {
+      window.i18nManager.translatePage();
+    }
+    
     // Configurar valores actuales
     const themeSelect = document.getElementById('themeSelect');
     const currentTheme = localStorage.getItem('theme') || 'auto';
     themeSelect.value = currentTheme;
+    
+    // Configurar selector de idioma
+    const languageSelect = document.getElementById('languageSelect');
+    if (languageSelect && window.i18nManager) {
+      languageSelect.value = window.i18nManager.getCurrentLanguage();
+      
+      languageSelect.addEventListener('change', (e) => {
+        const newLanguage = e.target.value;
+        if (window.i18nManager) {
+          window.i18nManager.setLanguage(newLanguage);
+          // Recargar la página para aplicar todas las traducciones
+          window.location.reload();
+        }
+      });
+    }
     
     // Event listeners
     document.querySelector('.close-settings').addEventListener('click', () => {
@@ -337,15 +364,6 @@ class AccountManager {
         } else {
           window.themeManager.setTheme(newTheme);
         }
-      }
-    });
-    
-    document.getElementById('clearHistory').addEventListener('click', () => {
-      if (confirm('¿Estás seguro de que quieres limpiar todo el historial de clasificaciones?')) {
-        localStorage.removeItem('classificationHistory');
-        this.showToast('Historial limpiado exitosamente', 'success');
-        this.displayUserData(); // Actualizar el conteo
-        document.querySelector('.settings-modal').remove();
       }
     });
     
@@ -394,7 +412,7 @@ class AccountManager {
       };
 
       let response;
-      if (isNativePlatform()) {
+      if (isNativePlatform) {
         response = await CapacitorHttp.get(requestConfig);
       } else {
         const fetchResponse = await fetch(requestConfig.url, {

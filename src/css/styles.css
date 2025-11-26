@@ -109,7 +109,7 @@ button:hover {
 }
 
 .modal.hidden {
-  display: none;
+  display: none !important;
 }
 
 .hidden {
@@ -119,14 +119,15 @@ button:hover {
 .modal-content {
   background: white;
   padding: 24px;
-  border-radius: 16px;
+  border-radius: 0;
   text-align: center;
-  max-width: 600px;
-  width: 90%;
-  max-height: 90vh;
+  max-width: 100%;
+  width: 100%;
+  max-height: 100vh;
+  height: 100vh;
   overflow-y: auto;
   position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: none;
 }
 
 /* El modal de clasificación ahora usa los mismos estilos que el modal de historial */
@@ -165,7 +166,8 @@ button:hover {
 
 @media (max-width: 480px) {
   .modal-content {
-    max-width: 98%;
+    max-width: 100%;
+    width: 100%;
     padding: 16px;
     border-radius: 12px;
   }
@@ -379,6 +381,7 @@ button.btn:hover {
   align-items: center;
   min-height: 100vh;
   padding: 30px;
+  padding-top: calc(30px + env(safe-area-inset-top, 24px));
   box-sizing: border-box;
 }
 
@@ -449,7 +452,7 @@ button.btn:hover {
   font-size: 18px;
   font-weight: 600;
   background: white;
-  color: #1f2937;
+  color: var(--text-primary);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -575,6 +578,7 @@ button.btn:hover {
 
   .login-container {
     padding: 20px;
+    padding-top: calc(20px + env(safe-area-inset-top, 24px));
     justify-content: center;
   }
 }
@@ -624,6 +628,7 @@ button.btn:hover {
   align-items: center;
   min-height: 100vh;
   padding: 30px;
+  padding-top: calc(30px + env(safe-area-inset-top, 24px));
   box-sizing: border-box;
   overflow-y: auto;
 }
@@ -714,7 +719,7 @@ button.btn:hover {
   font-size: 18px;
   font-weight: 600;
   background: white;
-  color: #1f2937;
+  color: var(--text-primary);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -762,6 +767,7 @@ button.btn:hover {
 
   .register-container {
     padding: 20px;
+    padding-top: calc(20px + env(safe-area-inset-top, 24px));
     justify-content: center;
   }
 }
@@ -845,6 +851,7 @@ button.btn:hover {
   max-width: 800px;
   margin: 0 auto;
   padding: 80px 20px 80px;
+  padding-top: calc(80px + env(safe-area-inset-top, 24px));
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -858,18 +865,21 @@ button.btn:hover {
 @media (min-width: 768px) {
   .home-container {
     padding: 100px 40px 80px;
+    padding-top: calc(100px + env(safe-area-inset-top, 24px));
   }
 }
 
 @media (min-width: 1024px) {
   .home-container {
     padding: 120px 60px 80px;
+    padding-top: calc(120px + env(safe-area-inset-top, 24px));
   }
 }
 
 @media (max-width: 480px) {
   .home-container {
     padding: 60px 20px 80px;
+    padding-top: calc(60px + env(safe-area-inset-top, 24px));
     min-height: calc(100vh - 80px);
   }
 }
@@ -1179,7 +1189,7 @@ button.btn:hover {
   top: 50%;
   transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.9);
-  color: #1f2937;
+  color: var(--text-primary);
   border: none;
   width: 40px;
   height: 40px;
@@ -1248,6 +1258,57 @@ button.btn:hover {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.section-header-with-help {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.section-title {
+  font-size: 28px;
+  margin: 0;
+  text-align: center;
+}
+
+.how-to-use-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.how-to-use-btn:hover {
+  background: var(--success-color);
+  color: white;
+  border-color: var(--success-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.how-to-use-btn:active {
+  transform: translateY(0);
+}
+
+.how-to-use-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .section-title {
@@ -1895,6 +1956,7 @@ button.btn:hover {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top, 24px));
   padding-bottom: 100px;
   /* Espacio para la navegación inferior */
 }
@@ -1938,7 +2000,7 @@ button.btn:hover {
 .profile-name {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
@@ -2196,7 +2258,7 @@ button.btn:hover {
 .section-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 20px 0;
 }
 
@@ -2228,7 +2290,7 @@ button.btn:hover {
 .token-header h4 {
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -2268,7 +2330,7 @@ button.btn:hover {
 }
 
 .token-text.visible {
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .token-actions {
@@ -2359,7 +2421,7 @@ button.btn:hover {
 .additional-info-content p {
   font-size: 16px;
   font-weight: 500;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0;
   word-break: break-word;
 }
@@ -2449,7 +2511,7 @@ button.btn:hover {
 .error-state h3 {
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 10px 0;
 }
 
@@ -2479,6 +2541,7 @@ button.btn:hover {
 @media (max-width: 768px) {
   .account-container {
     padding: 15px;
+    padding-top: calc(15px + env(safe-area-inset-top, 24px));
     padding-bottom: 100px;
   }
 
@@ -2754,7 +2817,7 @@ button.btn:hover {
 .account-section .profile-name {
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
@@ -2789,7 +2852,7 @@ button.btn:hover {
 .account-section .token-header h4 {
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -2829,7 +2892,7 @@ button.btn:hover {
 }
 
 .account-section .token-text.visible {
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 .account-section .token-actions {
@@ -2885,13 +2948,14 @@ button.btn:hover {
   min-height: 100vh;
   background: var(--bg-color);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  color: var(--text-color);
+  color: var(--text-primary);
 }
 
 .historial-container {
   max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top, 24px));
   padding-bottom: 100px;
 }
 
@@ -2998,12 +3062,12 @@ button.btn:hover {
 .state-content h3 {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--text-primary);
   margin: 20px 0 10px;
 }
 
 .state-content p {
-  color: var(--text-color-secondary);
+  color: var(--text-secondary);
   font-size: 15px;
   margin: 0 0 25px;
   line-height: 1.5;
@@ -3057,7 +3121,7 @@ button.btn:hover {
 
 /* Action Buttons */
 .retry-btn, .start-btn {
-  background: var(--primary-color);
+  background: var(--success-color);
   color: white;
   border: none;
   border-radius: 12px;
@@ -3191,12 +3255,12 @@ button.btn:hover {
 .classification-card {
   background: var(--card-bg);
   border-radius: 20px;
-  overflow: visible;
+  overflow: hidden;
   border: 2px solid var(--border-color);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   position: relative;
-  min-height: 380px;
+  min-height: 450px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   animation: fadeInUp 0.5s ease-out both;
   display: flex;
@@ -3233,7 +3297,8 @@ button.btn:hover {
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.4s ease;
-  z-index: 2;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .classification-card:hover::before {
@@ -3248,7 +3313,7 @@ button.btn:hover {
 
 .card-image {
   position: relative;
-  height: 200px;
+  height: 180px;
   overflow: hidden;
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   border-radius: 18px 18px 0 0;
@@ -3260,6 +3325,11 @@ button.btn:hover {
   height: 100%;
   object-fit: cover;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 18px 18px 0 0;
+}
+
+.card-image .image-placeholder {
+  border-radius: 18px 18px 0 0;
 }
 
 .classification-card:hover .card-image img {
@@ -3352,17 +3422,137 @@ button.btn:hover {
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
 
+/* Botón de recomendaciones en tarjetas del historial */
+.plant-name-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+  width: 100%;
+  position: relative;
+  z-index: 3;
+  min-width: 0;
+}
+
+.plant-name-header .plant-name {
+  flex: 1 1 auto;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recommendations-btn-card {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.35), 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  flex-shrink: 0;
+  animation: pulseRecommendationsCard 2s infinite;
+  position: relative;
+  z-index: 4;
+}
+
+@keyframes pulseRecommendationsCard {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6), 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.recommendations-btn-card:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(239, 68, 68, 0.5), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.recommendations-btn-card:active {
+  transform: translateY(0);
+}
+
+.recommendations-btn-card svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.recommendations-btn-card span {
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* Optimización para pantallas grandes en tarjetas del historial */
+@media (min-width: 769px) {
+  .recommendations-btn-card {
+    padding: 8px 14px;
+    font-size: 12px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+
+  .recommendations-btn-card svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .recommendations-btn-card span {
+    font-size: 12px;
+  }
+
+  .plant-name-header {
+    gap: 16px;
+  }
+}
+
+/* Responsive para botón en tarjetas */
+@media (max-width: 768px) {
+  .plant-name-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .recommendations-btn-card {
+    padding: 5px 10px;
+    font-size: 10px;
+    gap: 4px;
+  }
+
+  .recommendations-btn-card svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .recommendations-btn-card span {
+    font-size: 10px;
+  }
+}
+
 .card-content {
   padding: 16px 24px 20px 24px;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  min-height: auto;
+  justify-content: space-between;
+  min-height: 200px;
   background: var(--card-bg);
   position: relative;
   overflow: visible;
-  gap: 10px;
+  gap: 12px;
+  z-index: 2;
 }
 
 .card-content::before {
@@ -3373,6 +3563,8 @@ button.btn:hover {
   right: 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .plant-name {
@@ -3399,38 +3591,51 @@ button.btn:hover {
   font-size: 14px;
   color: var(--text-secondary);
   font-style: italic;
-  margin: 0 0 4px 0;
-  display: block;
+  margin: 0 0 6px 0;
+  display: block !important;
   font-weight: 500;
   line-height: 1.4;
   min-height: 1.5em;
-  opacity: 1;
-  visibility: visible;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: relative;
+  z-index: 3;
+  width: 100%;
 }
 
 .card-info {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  gap: 4px;
+  gap: 6px;
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  min-height: 0;
 }
 
 .card-actions {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding-top: 8px;
+  padding-top: 16px;
   border-top: 1px solid var(--border-color);
-  margin-top: 2px;
+  margin-top: 12px;
 }
 
 .classification-datetime {
-  display: flex;
+  display: flex !important;
   flex-direction: row;
   align-items: center;
   gap: 12px;
-  margin-top: 0;
+  margin-top: 10px;
+  margin-bottom: 4px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .classification-date {
@@ -3471,22 +3676,22 @@ button.btn:hover {
 }
 
 .view-details {
-  background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
+  background: transparent;
+  color: var(--success-color);
+  border: 1.5px solid var(--success-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
   white-space: nowrap;
   flex-shrink: 0;
-  min-width: 110px;
-  align-self: flex-start;
+  min-width: auto;
+  align-self: flex-end;
 }
 
 .view-details::before {
@@ -3508,14 +3713,17 @@ button.btn:hover {
 }
 
 .view-details:hover {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  background: var(--success-color);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
 
 .view-details:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  background: var(--success-color);
+  color: white;
+  box-shadow: 0 1px 4px rgba(16, 185, 129, 0.15);
 }
 
 /* Pagination */
@@ -3533,7 +3741,7 @@ button.btn:hover {
 }
 
 .page-info {
-  color: var(--text-color-secondary);
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
 }
@@ -3548,7 +3756,7 @@ button.btn:hover {
 
 .pagination-btn {
   background: var(--card-bg);
-  color: var(--text-color);
+  color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 10px 16px;
@@ -3562,9 +3770,9 @@ button.btn:hover {
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: var(--primary-color);
+  background: var(--success-color);
   color: white;
-  border-color: var(--primary-color);
+  border-color: var(--success-color);
 }
 
 .pagination-btn:disabled {
@@ -3584,7 +3792,7 @@ button.btn:hover {
 
 .page-number {
   background: var(--card-bg);
-  color: var(--text-color);
+  color: var(--text-primary);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px 12px;
@@ -3598,9 +3806,9 @@ button.btn:hover {
 
 .page-number:hover,
 .page-number.active {
-  background: var(--primary-color);
+  background: var(--success-color);
   color: white;
-  border-color: var(--primary-color);
+  border-color: var(--success-color);
 }
 
 /* Modal Styles */
@@ -3610,13 +3818,13 @@ button.btn:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--bg-primary);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   z-index: 1000;
-  padding: 20px;
-  backdrop-filter: blur(8px);
+  padding: 0;
+  backdrop-filter: none;
 }
 
 .modal-overlay {
@@ -3625,19 +3833,24 @@ button.btn:hover {
   left: 0;
   width: 100%;
   height: 100%;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .modal-content {
   background: var(--card-bg);
-  border-radius: 24px;
+  border-radius: 0;
   width: 100%;
-  max-width: 750px;
-  max-height: 90vh;
+  max-width: 100%;
+  max-height: 100vh;
+  height: 100vh;
   overflow-y: auto;
   position: relative;
-  border: 3px solid var(--border-color);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.2);
+  border: none;
+  box-shadow: none;
   animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+  pointer-events: auto;
 }
 
 @keyframes modalSlideIn {
@@ -3700,27 +3913,396 @@ button.btn:hover {
 }
 
 .modal-image-container {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto 32px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  background: var(--card-bg);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-image-container:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.modal-image-container img,
+.modal-image-container .modal-plant-image {
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: 400px;
+  object-fit: contain !important;
+  display: block;
+  border-radius: 16px !important;
+  background: transparent;
+  margin: 0 auto;
+}
+
+.modal-image-container .image-placeholder {
+  width: 100%;
+  height: 250px;
+  border-radius: 16px;
+}
+
+/* Wrapper para imagen con botón de recomendaciones */
+.modal-image-wrapper {
+  position: relative;
   width: 200px;
   height: 200px;
   margin: 0 auto 32px;
   border-radius: 50%;
-  overflow: hidden;
-  border: 5px solid white;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  background: var(--card-bg);
-  transition: all 0.3s ease;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.modal-image-container:hover {
-  transform: scale(1.05);
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
-}
-
-.modal-image-container img {
+.modal-image-wrapper img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  border-radius: 50%;
+  border: 5px solid white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.modal-image-wrapper:hover img {
+  transform: scale(1.05);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.25);
+}
+
+/* Botón de recomendaciones */
+.recommendations-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  white-space: nowrap;
+  transform: translate(-10px, -10px);
+  animation: pulseRecommendations 2s infinite;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Optimización para pantallas grandes (web) */
+@media (min-width: 769px) {
+  .recommendations-btn {
+    padding: 12px 18px;
+    font-size: 13px;
+    border-radius: 14px;
+    gap: 8px;
+  }
+
+  .recommendations-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .recommendations-btn span {
+    font-size: 13px;
+  }
+
+  .modal-image-wrapper {
+    width: 240px;
+    height: 240px;
+  }
+}
+
+@keyframes pulseRecommendations {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6), 0 4px 10px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.recommendations-btn:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translate(-10px, -10px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6), 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.recommendations-btn:active {
+  transform: translate(-10px, -10px) scale(0.98);
+}
+
+.recommendations-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.recommendations-btn span {
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* Modal de recomendaciones */
+.recommendations-modal-content {
+  max-width: 100%;
+  width: 100%;
+  max-height: 100vh;
+  height: 100vh;
+}
+
+.recommendations-modal-body {
+  padding: 32px;
+  background: var(--bg-primary);
+}
+
+.recommendations-intro {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.recommendations-intro .scientific-name {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+  font-style: italic;
+}
+
+.section-title-recommendations {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 24px 0;
+  padding-bottom: 12px;
+  border-bottom: 3px solid var(--success-color);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title-recommendations::before {
+  content: '🌱';
+  font-size: 24px;
+}
+
+.diseases-section,
+.general-practices-section {
+  margin-bottom: 40px;
+}
+
+.disease-card {
+  background: var(--card-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.disease-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  transition: width 0.3s ease;
+}
+
+.disease-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #ef4444;
+}
+
+.disease-card:hover::before {
+  width: 6px;
+}
+
+.disease-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.disease-name::before {
+  content: '⚠️';
+  font-size: 24px;
+}
+
+.disease-cause,
+.disease-vector {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 16px 0;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border-left: 3px solid #f59e0b;
+}
+
+.disease-cause strong,
+.disease-vector strong {
+  color: var(--text-primary);
+}
+
+.disease-section {
+  margin-bottom: 20px;
+}
+
+.disease-section:last-child {
+  margin-bottom: 0;
+}
+
+.disease-section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.disease-section-title::before {
+  content: '📋';
+  font-size: 18px;
+}
+
+.disease-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.disease-list li {
+  padding: 12px 16px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  position: relative;
+  padding-left: 32px;
+  transition: all 0.2s ease;
+}
+
+.disease-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 12px;
+  color: var(--success-color);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.disease-list li:hover {
+  background: var(--hover-bg);
+  transform: translateX(4px);
+}
+
+.general-practices-section {
+  background: var(--card-bg);
+  border: 2px solid var(--success-color);
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 32px;
+}
+
+.general-practices-section .section-title-recommendations {
+  border-bottom-color: var(--success-color);
+}
+
+.general-practices-section .section-title-recommendations::before {
+  content: '✨';
+}
+
+.general-practices-section .disease-list li::before {
+  content: '🌿';
+  color: var(--success-color);
+}
+
+/* Responsive para botón de recomendaciones */
+@media (max-width: 768px) {
+  .recommendations-btn {
+    padding: 8px 12px;
+    font-size: 11px;
+    gap: 4px;
+    transform: translate(-8px, -8px);
+  }
+
+  .recommendations-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .recommendations-btn span {
+    font-size: 11px;
+  }
+
+  .recommendations-modal-content {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .recommendations-modal-body {
+    padding: 20px;
+  }
+
+  .disease-card {
+    padding: 16px;
+  }
+
+  .disease-name {
+    font-size: 18px;
+  }
+}
+
+/* Optimización adicional para pantallas muy grandes */
+@media (min-width: 1200px) {
+  .recommendations-modal-content {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .modal-image-wrapper {
+    width: 260px;
+    height: 260px;
+  }
+
+  .recommendations-btn {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
 }
 
 .modal-section {
@@ -3820,7 +4402,9 @@ button.btn:hover {
 /* Modal Image Placeholder */
 .image-placeholder {
   width: 100%;
-  height: 300px;
+  min-height: 250px;
+  max-height: 400px;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3828,6 +4412,7 @@ button.btn:hover {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
   color: var(--text-secondary);
   gap: 16px;
+  border-radius: 16px;
 }
 
 .image-placeholder svg {
@@ -3844,11 +4429,14 @@ button.btn:hover {
 }
 
 .modal-plant-image {
-  width: 100%;
-  height: auto;
+  width: auto !important;
+  max-width: 100% !important;
+  height: auto !important;
   max-height: 400px;
   object-fit: contain;
   display: block;
+  border-radius: 16px;
+  margin: 0 auto;
 }
 
 /* Bottom Navigation - Updated */
@@ -3877,7 +4465,7 @@ button.btn:hover {
   flex-direction: column;
   align-items: center;
   text-decoration: none;
-  color: var(--text-color-secondary);
+  color: var(--text-secondary);
   transition: all 0.2s ease;
   padding: 8px 16px;
   border-radius: 12px;
@@ -3914,6 +4502,7 @@ button.btn:hover {
 @media (max-width: 768px) {
   .historial-container {
     padding: 15px;
+    padding-top: calc(15px + env(safe-area-inset-top, 24px));
     padding-bottom: 100px;
   }
   
@@ -4002,16 +4591,17 @@ button.btn:hover {
 .pagination-controls {
   margin-top: 30px;
   padding: 20px;
-  background: white;
+  background: var(--card-bg);
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
 }
 
 .pagination-info {
   text-align: center;
   margin-bottom: 20px;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .pagination-buttons {
@@ -4027,10 +4617,10 @@ button.btn:hover {
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: white;
-  color: #374151;
+  background: var(--card-bg);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -4038,9 +4628,9 @@ button.btn:hover {
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: #f0fdf4;
-  border-color: #4ade80;
-  color: #4ade80;
+  background: var(--success-color);
+  border-color: var(--success-color);
+  color: white;
 }
 
 .pagination-btn:disabled {
@@ -4065,10 +4655,10 @@ button.btn:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: white;
-  color: #374151;
+  background: var(--card-bg);
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -4076,14 +4666,14 @@ button.btn:hover {
 }
 
 .page-number:hover {
-  background: #f0fdf4;
-  border-color: #4ade80;
-  color: #4ade80;
+  background: var(--success-color);
+  border-color: var(--success-color);
+  color: white;
 }
 
 .page-number.active {
-  background: #4ade80;
-  border-color: #4ade80;
+  background: var(--success-color);
+  border-color: var(--success-color);
   color: white;
 }
 
@@ -4096,7 +4686,7 @@ button.btn:hover {
 .page-number.ellipsis:hover {
   background: transparent;
   border: none;
-  color: #374151;
+  color: var(--text-primary);
 }
 
 /* Modal Styles */
@@ -4108,9 +4698,9 @@ button.btn:hover {
   height: 100%;
   z-index: 1000;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -4120,19 +4710,22 @@ button.btn:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .modal-content {
   position: relative;
   background: white;
-  border-radius: 20px;
-  max-width: 800px;
+  border-radius: 0;
+  max-width: 100%;
   width: 100%;
-  max-height: 90vh;
+  max-height: 100vh;
+  height: 100vh;
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
 }
@@ -4149,7 +4742,7 @@ button.btn:hover {
 .modal-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -4222,15 +4815,16 @@ button.btn:hover {
 }
 
 .modal-section {
-  background: #f9fafb;
+  background: var(--bg-secondary);
   border-radius: 12px;
   padding: 20px;
+  border: 1px solid var(--border-color);
 }
 
 .modal-section .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0 0 16px 0;
 }
 
@@ -4256,7 +4850,7 @@ button.btn:hover {
 
 .info-value {
   font-size: 15px; /* Adjusted for consistency */
-  color: var(--text-color); /* USE VARIABLE FOR THEME */
+  color: var(--text-primary); /* USE VARIABLE FOR THEME */
   font-weight: 500;
   line-height: 1.4;
 }
@@ -4342,11 +4936,12 @@ button.btn:hover {
 /* Responsive Modal */
 @media (max-width: 768px) {
   .modal {
-    padding: 10px;
+    padding: 0;
   }
   
   .modal-content {
-    max-height: 95vh;
+    max-height: 100vh;
+    height: 100vh;
   }
   
   .modal-header {
@@ -4564,6 +5159,7 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 420px;
   margin: 0 auto;
   padding: 20px 16px 100px;
+  padding-top: calc(20px + env(safe-area-inset-top, 24px));
   min-height: 100vh;
 }
 
@@ -5051,6 +5647,7 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 768px) {
   .account-container {
     padding: 16px 12px 100px;
+    padding-top: calc(16px + env(safe-area-inset-top, 24px));
   }
   
   .profile-card {
@@ -5105,6 +5702,7 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top, 24px));
 }
 
 .about-header-section {
@@ -5303,9 +5901,9 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   z-index: 3000;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -5319,25 +5917,29 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .developer-modal .modal-content {
   position: relative;
   background: var(--card-bg);
-  border-radius: 24px;
-  max-width: 500px;
+  border-radius: 0;
+  max-width: 100%;
   width: 100%;
-  max-height: 90vh;
+  max-height: 100vh;
+  height: 100vh;
   overflow-y: auto;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.2);
-  border: 3px solid var(--border-color);
+  box-shadow: none;
+  border: none;
   animation: modalSlideIn 0.3s ease;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 0;
+  color: var(--text-primary);
 }
 
 @keyframes modalSlideIn {
@@ -5431,6 +6033,8 @@ h1, h2, h3, h4, h5, h6 {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  background: var(--card-bg);
+  color: var(--text-primary);
 }
 
 .modal-role-section {
@@ -5438,6 +6042,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 24px 0 28px;
   margin-bottom: 28px;
   border-bottom: 2px solid var(--border-color);
+  background: transparent;
 }
 
 .modal-body .modal-role {
@@ -5456,6 +6061,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal-section {
   margin-bottom: 24px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border-color);
 }
 
 .modal-section:last-child {
@@ -5486,6 +6095,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 15px;
   line-height: 1.7;
   color: var(--text-secondary);
+  background: transparent;
 }
 
 .developer-image.clickable {
@@ -5503,18 +6113,18 @@ h1, h2, h3, h4, h5, h6 {
 /* Responsive adjustments for modal */
 @media (max-width: 768px) {
   .developer-modal {
-    padding: 20px;
-    align-items: center;
-    justify-content: center;
+    padding: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
   
   .developer-modal .modal-content {
     max-width: 100%;
     width: 100%;
-    border-radius: 24px;
-    max-height: 90vh;
-    height: auto;
-    margin: 0 auto;
+    border-radius: 0;
+    max-height: 100vh;
+    height: 100vh;
+    margin: 0;
     animation: modalSlideIn 0.3s ease;
   }
   
@@ -5592,10 +6202,149 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Modal de Cómo Usar */
+.how-to-use-modal {
+  max-width: 100%;
+  width: 100%;
+}
+
+.how-to-use-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.instruction-step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.instruction-step:hover {
+  background: var(--bg-tertiary);
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--success-color);
+  color: white;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.step-content p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.how-to-use-tips {
+  margin-top: 32px;
+  padding: 24px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.tips-title {
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.tips-list {
+  margin: 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.tips-list li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.tips-list li:before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--success-color);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.tips-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive para botón Cómo usar */
+@media (max-width: 768px) {
+  .section-header-with-help {
+    gap: 12px;
+  }
+
+  .how-to-use-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .instruction-step {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .step-number {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 16px;
+  }
+
+  .step-content h3 {
+    font-size: 16px;
+  }
+
+  .step-content p {
+    font-size: 13px;
+  }
+}
+
 @media (max-width: 480px) {
   .modal-content {
-    max-height: 98vh;
-    border-radius: 20px 20px 0 0;
+    max-height: 100vh;
+    height: 100vh;
+    border-radius: 0;
   }
   
   .modal-header {
@@ -5636,21 +6385,22 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--bg-primary);
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   z-index: 2000;
 }
 
 .settings-content {
   background: var(--card-bg);
-  border-radius: 15px;
-  width: 90%;
-  max-width: 400px;
-  max-height: 80vh;
+  border-radius: 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 100vh;
+  height: 100vh;
   overflow-y: auto;
-  border: 1px solid var(--border-color);
+  border: none;
 }
 
 .settings-header {
@@ -5663,20 +6413,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .settings-header h3 {
   margin: 0;
-  color: var(--text-color);
+  color: var(--text-primary);
   font-size: 1.3em;
 }
 
 .close-settings {
   font-size: 1.5em;
   cursor: pointer;
-  color: var(--text-color-secondary);
+  color: var(--text-secondary);
   line-height: 1;
   transition: color 0.2s ease;
 }
 
 .close-settings:hover {
-  color: var(--text-color);
+  color: var(--text-primary);
 }
 
 .settings-body {
@@ -5697,7 +6447,7 @@ h1, h2, h3, h4, h5, h6 {
 .setting-item label {
   display: block;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--text-primary);
   margin-bottom: 8px;
 }
 
@@ -5707,7 +6457,7 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--bg-color);
-  color: var(--text-color);
+  color: var(--text-primary);
   font-size: 1em;
 }
 
@@ -5979,6 +6729,21 @@ button {
     width: 100%;
     padding: 12px 20px;
     font-size: 14px;
+  }
+
+  .card-actions {
+    padding-top: 20px;
+    margin-top: 16px;
+  }
+
+  .classification-datetime {
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+
+  .card-content {
+    gap: 16px;
+    padding-bottom: 24px;
   }
   
   /* Mejorar legibilidad en móvil */

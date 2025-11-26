@@ -4,14 +4,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "start": "node server.js",
-    "render-build": "npm run build"
-  },
-  "main": "server.js",
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "preview": "vite preview"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
@@ -28,7 +21,6 @@
     "@capacitor/haptics": "^7.0.2",
     "@capacitor/keyboard": "^7.0.3",
     "@capacitor/preferences": "^7.0.2",
-    "@capacitor/status-bar": "^7.0.3",
-    "express": "^4.18.2"
+    "@capacitor/status-bar": "^7.0.3"
   }
 }

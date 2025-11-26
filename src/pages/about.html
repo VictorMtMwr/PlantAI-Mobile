@@ -35,7 +35,7 @@
             <path d="M2 12l10 5 10-5"></path>
           </svg>
         </div>
-        <h1 class="about-main-title">Acerca de PlantAI</h1>
+        <h1 class="about-main-title" data-i18n="about.title">Acerca de PlantAI</h1>
       </div>
     </section>
 
@@ -44,21 +44,19 @@
       <div class="about-card gradient-card">
         <div class="about-content">
           <div class="about-description">
-            <p>
-              PlantAI es una aplicación móvil innovadora que utiliza inteligencia artificial 
-              para identificar y clasificar plantas. Nuestra aplicación permite a los usuarios 
-              tomar fotografías de plantas y obtener información detallada sobre su especie, 
-              forma y estado de salud.
+            <p data-i18n="about.description1">
+              PlantAI es una aplicación móvil innovadora diseñada para transformar la manera en que identificamos y cuidamos nuestras plantas. Utilizando tecnología avanzada de inteligencia artificial y modelos de machine learning, PlantAI permite a los usuarios tomar fotografías de plantas y recibir al instante información detallada sobre su especie, características morfológicas y estado de salud.
             </p>
-            <p>
-              Con tecnología de machine learning avanzada, PlantAI ayuda a investigadores, 
-              agricultores y entusiastas de la botánica a identificar plantas de manera rápida 
-              y precisa, contribuyendo a la conservación y estudio de la biodiversidad.
+            <p data-i18n="about.description2">
+              Nuestra plataforma no solo identifica la planta, sino que también detecta posibles enfermedades, plagas o signos de estrés, ofreciendo recomendaciones prácticas y basadas en evidencia para su tratamiento. Gracias a esta funcionalidad, investigadores, agricultores y entusiastas de la botánica pueden actuar rápidamente ante cualquier afectación y mejorar el bienestar de sus cultivos.
+            </p>
+            <p data-i18n="about.description3">
+              PlantAI contribuye a la conservación y estudio de la biodiversidad al proporcionar una herramienta accesible, precisa y fácil de usar, diseñada para apoyar tanto a expertos como a personas que están comenzando en el mundo de la botánica. Con PlantAI, cuidar de tus plantas nunca ha sido tan sencillo, intuitivo y eficiente.
             </p>
           </div>
           
           <div class="developers-section">
-            <h4 class="developers-title">Equipo de Desarrollo</h4>
+            <h4 class="developers-title" data-i18n="about.developers">Equipo de Desarrollo</h4>
             <div class="developers-grid">
               <div class="developer-card" data-developer="victor">
                 <div class="developer-image clickable">
@@ -66,7 +64,7 @@
                 </div>
                 <div class="developer-info">
                   <h5>Víctor Martínez</h5>
-                  <p class="developer-role">Desarrollador</p>
+                  <p class="developer-role" data-i18n="developer.victor.role">ML Developer, Backend Developer, Android Developer & Project Manager</p>
                 </div>
               </div>
               
@@ -76,7 +74,7 @@
                 </div>
                 <div class="developer-info">
                   <h5>Santiago Payares</h5>
-                  <p class="developer-role">Desarrollador</p>
+                  <p class="developer-role" data-i18n="developer.santiago.role">Frontend Developer & UX/UI Designer</p>
                 </div>
               </div>
               
@@ -86,7 +84,7 @@
                 </div>
                 <div class="developer-info">
                   <h5>Julián Camacho</h5>
-                  <p class="developer-role">Desarrollador</p>
+                  <p class="developer-role" data-i18n="developer.julian.role">Documentation & Quality Assurance</p>
                 </div>
               </div>
               
@@ -96,7 +94,7 @@
                 </div>
                 <div class="developer-info">
                   <h5>Camilo Naufal</h5>
-                  <p class="developer-role">Profesor</p>
+                  <p class="developer-role" data-i18n="developer.camilo.role">Artificial Vision, AI Expert & Testing</p>
                 </div>
               </div>
             </div>
@@ -115,7 +113,7 @@
           <polyline points="9,22 9,12 15,12 15,22"></polyline>
         </svg>
       </div>
-      <span class="nav-label">Inicio</span>
+      <span class="nav-label" data-i18n="nav.home">Inicio</span>
     </a>
     <a href="historial.html" class="nav-item">
       <div class="nav-icon">
@@ -126,7 +124,7 @@
           <line x1="16" y1="17" x2="8" y2="17"></line>
         </svg>
       </div>
-      <span class="nav-label">Historial</span>
+      <span class="nav-label" data-i18n="nav.history">Historial</span>
     </a>
     <a href="account.html" class="nav-item">
       <div class="nav-icon">
@@ -135,7 +133,7 @@
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
       </div>
-      <span class="nav-label">Mi Cuenta</span>
+      <span class="nav-label" data-i18n="nav.account">Mi Cuenta</span>
     </a>
     <a href="about.html" class="nav-item active">
       <div class="nav-icon">
@@ -145,7 +143,7 @@
           <path d="M2 12l10 5 10-5"></path>
         </svg>
       </div>
-      <span class="nav-label">Acerca de</span>
+      <span class="nav-label" data-i18n="nav.about">Acerca de</span>
     </a>
   </nav>
 
@@ -170,19 +168,20 @@
           <p id="modalDeveloperRole" class="modal-role"></p>
         </div>
         <div class="modal-section">
-          <h3 class="modal-section-title">Formación Académica</h3>
+          <h3 class="modal-section-title" data-i18n="about.academicBackground">Formación Académica</h3>
           <p id="modalEducation" class="modal-text"></p>
         </div>
         <div class="modal-section">
-          <h3 class="modal-section-title">Rol en el Proyecto</h3>
+          <h3 class="modal-section-title" data-i18n="about.projectRole">Rol en el Proyecto</h3>
           <p id="modalResponsibilities" class="modal-text"></p>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Theme Manager debe cargarse PRIMERO -->
+  <!-- Theme Manager e I18n Manager deben cargarse PRIMERO -->
   <script src="../js/theme/themeManager.js"></script>
+  <script type="module" src="../js/i18n/i18nManager.js"></script>
   <script type="module" src="../js/about/about.js"></script>
 </body>
 </html>

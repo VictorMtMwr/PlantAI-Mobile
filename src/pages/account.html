@@ -51,18 +51,18 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
-              <span id="userRoleText">Usuario</span>
+              <span id="userRoleText" data-i18n="account.user">Usuario</span>
             </span>
           </div>
           <div class="profile-stats">
             <div class="stat-item">
               <span class="stat-number" id="totalScans">0</span>
-              <span class="stat-label">Escaneos</span>
+              <span class="stat-label" data-i18n="account.scans">Escaneos</span>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
               <span class="stat-number" id="joinDate">-</span>
-              <span class="stat-label">Miembro desde</span>
+              <span class="stat-label" data-i18n="account.memberSince">Miembro desde</span>
             </div>
           </div>
         </div>
@@ -83,8 +83,8 @@
             </svg>
           </div>
           <div class="action-content">
-            <h3>Tema</h3>
-            <p id="currentThemeText">Modo claro</p>
+            <h3 data-i18n="account.theme">Tema</h3>
+            <p id="currentThemeText" data-i18n="account.lightMode">Modo claro</p>
           </div>
         </button>
 
@@ -97,8 +97,8 @@
             </svg>
           </div>
           <div class="action-content">
-            <h3>Exportar Datos</h3>
-            <p>Descargar historial</p>
+            <h3 data-i18n="account.exportData">Exportar Datos</h3>
+            <p data-i18n="account.downloadHistory">Descargar historial</p>
           </div>
         </button>
 
@@ -110,8 +110,8 @@
             </svg>
           </div>
           <div class="action-content">
-            <h3>Configuración</h3>
-            <p>Preferencias</p>
+            <h3 data-i18n="account.settings">Configuración</h3>
+            <p data-i18n="account.preferences">Preferencias</p>
           </div>
         </button>
 
@@ -124,8 +124,8 @@
             </svg>
           </div>
           <div class="action-content">
-            <h3>Cerrar Sesión</h3>
-            <p>Salir de la app</p>
+            <h3 data-i18n="account.logout">Cerrar Sesión</h3>
+            <p data-i18n="account.logoutSubtitle">Salir de la app</p>
           </div>
         </button>
       </div>
@@ -135,7 +135,7 @@
     <section class="user-info-section">
       <div class="info-card gradient-card">
         <div class="info-card-header">
-          <h3>Información Personal</h3>
+          <h3 data-i18n="account.personalInfo">Información Personal</h3>
           <div class="info-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -150,7 +150,7 @@
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
-              <span>Nombre Completo</span>
+              <span data-i18n="account.fullName">Nombre Completo</span>
             </div>
             <div class="info-value" id="fullName">Cargando...</div>
           </div>
@@ -160,7 +160,7 @@
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
-              <span>Correo Electrónico</span>
+              <span data-i18n="account.email">Correo Electrónico</span>
             </div>
             <div class="info-value" id="emailInfo">Cargando...</div>
           </div>
@@ -171,7 +171,7 @@
                 <circle cx="8.5" cy="7" r="4"></circle>
                 <polyline points="17,11 19,13 23,9"></polyline>
               </svg>
-              <span>Rol de Usuario</span>
+              <span data-i18n="account.userRole">Rol de Usuario</span>
             </div>
             <div class="info-value" id="roleInfo">
               <span class="role-badge" id="roleBadge">Usuario</span>
@@ -265,7 +265,7 @@
           <polyline points="9,22 9,12 15,12 15,22"></polyline>
         </svg>
       </div>
-      <span class="nav-label">Inicio</span>
+      <span class="nav-label" data-i18n="nav.home">Inicio</span>
     </a>
     <a href="historial.html" class="nav-item">
       <div class="nav-icon">
@@ -276,7 +276,7 @@
           <line x1="16" y1="17" x2="8" y2="17"></line>
         </svg>
       </div>
-      <span class="nav-label">Historial</span>
+      <span class="nav-label" data-i18n="nav.history">Historial</span>
     </a>
     <a href="account.html" class="nav-item active">
       <div class="nav-icon">
@@ -285,7 +285,7 @@
           <circle cx="12" cy="7" r="4"></circle>
         </svg>
       </div>
-      <span class="nav-label">Mi Cuenta</span>
+      <span class="nav-label" data-i18n="nav.account">Mi Cuenta</span>
     </a>
     <a href="about.html" class="nav-item">
       <div class="nav-icon">
@@ -295,12 +295,13 @@
           <path d="M2 12l10 5 10-5"></path>
         </svg>
       </div>
-      <span class="nav-label">Acerca de</span>
+      <span class="nav-label" data-i18n="nav.about">Acerca de</span>
     </a>
   </nav>
 
-  <!-- Theme Manager debe cargarse PRIMERO -->
+  <!-- Theme Manager e I18n Manager deben cargarse PRIMERO -->
   <script src="../js/theme/themeManager.js"></script>
+  <script type="module" src="../js/i18n/i18nManager.js"></script>
   
   <script type="module" src="../js/account/account.js"></script>
   <script type="module">

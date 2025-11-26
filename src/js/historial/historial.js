@@ -1,6 +1,8 @@
 import { API_URL, isNativePlatform } from '../core/config.js';
 import { CapacitorHttp, Capacitor } from '@capacitor/core';
 import { getCurrentToken, requireAuth } from '../auth/sessionManager.js';
+import { getRecommendationsByScientificName } from '../data/diseaseRecommendations.js';
+import { translateRecommendationText } from '../i18n/recommendationsTranslations.js';
 
 class HistorialManager {
   constructor() {
@@ -303,6 +305,25 @@ class HistorialManager {
     console.log('🔍 common_name:', classification.common_name);
     console.log('🔍 Nombre común final:', commonName);
 
+    // Obtener estado de salud
+    const isHealthy = classification.isHealthy !== undefined ? classification.isHealthy : classification.taggedHealthy;
+    const isDiseased = isHealthy === false;
+    
+    // Generar botón de recomendaciones si está enferma
+    const i18n = window.i18nManager || { t: (key) => key };
+    const recommendationsBtn = isDiseased ? `
+      <button class="recommendations-btn-card" 
+              onclick="event.stopPropagation(); showRecommendationsFromHistorial('${scientificName.replace(/'/g, "\\'")}', '${commonName.replace(/'/g, "\\'")}')" 
+              title="${i18n.t('recommendations.button')}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
+        </svg>
+        <span>${i18n.t('recommendations.button')}</span>
+      </button>
+    ` : '';
+
     return `
       <div class="classification-card" onclick="viewClassificationDetails('${classification.id || classification._id}')">
         <div class="card-image">
@@ -312,17 +333,15 @@ class HistorialManager {
         
         <div class="card-content">
           <div class="card-info">
-            <h3 class="plant-name">${scientificName}</h3>
+            <div class="plant-name-header">
+              <h3 class="plant-name">${scientificName}</h3>
+              ${recommendationsBtn}
+            </div>
             <p class="plant-common">${commonName}</p>
             <div class="classification-datetime">
               <span class="classification-date">${formattedDate}</span>
               ${formattedTime ? `<span class="classification-time">${formattedTime}</span>` : ''}
             </div>
-          </div>
-          <div class="card-actions">
-            <button class="view-details" onclick="event.stopPropagation(); viewClassificationDetails('${classification.id || classification._id}')">
-              Ver más
-            </button>
           </div>
         </div>
       </div>
@@ -596,9 +615,6 @@ class HistorialManager {
     // Mostrar imagen
     this.renderModalImage(classification);
     
-    // Mostrar información principal
-    this.renderMainInfo(classification);
-    
     // Mostrar información técnica
     this.renderTechnicalInfo(classification);
     
@@ -608,8 +624,13 @@ class HistorialManager {
     // Mostrar modal
     const modal = document.getElementById('detailsModal');
     if (modal) {
+      console.log('🔍 Removiendo clase hidden del modal');
       modal.classList.remove('hidden');
+      modal.style.display = 'flex';
       document.body.style.overflow = 'hidden'; // Prevenir scroll del body
+      console.log('🔍 Modal mostrado, clases:', modal.classList.toString());
+    } else {
+      console.error('❌ Modal no encontrado');
     }
   }
 
@@ -715,6 +736,24 @@ class HistorialManager {
     const technicalInfo = document.getElementById('technicalInfo');
     if (!technicalInfo) return;
 
+    // Nombre científico (predicho) con confianza
+    const scientificName = classification.scientificName || classification.scientific_name || 'No identificado';
+    const confidence = classification.speciesConfidence !== undefined && classification.speciesConfidence !== null
+      ? Math.round((classification.speciesConfidence <= 1 ? classification.speciesConfidence * 100 : classification.speciesConfidence))
+      : null;
+    const plantNameWithConfidence = confidence !== null 
+      ? `${scientificName} (${confidence}%)`
+      : scientificName;
+
+    // Nombre común (preferir español, luego inglés)
+    const commonName = classification.commonNameEs || classification.commonNameEn || classification.common_name || 'Nombre común no disponible';
+
+    // Estado de salud
+    const isHealthy = classification.isHealthy !== undefined ? classification.isHealthy : classification.taggedHealthy;
+    const healthStatus = isHealthy === true ? 'Healthy' : isHealthy === false ? 'Diseased' : 'No determinado';
+    const healthIcon = isHealthy === true ? '✅' : isHealthy === false ? '❌' : '❓';
+    const healthColor = isHealthy === true ? 'var(--success-color)' : isHealthy === false ? '#ef4444' : 'var(--text-secondary)';
+
     // Obtener y formatear la fecha
     const dateValue = classification.created_at || classification.timestamp || classification.createdAt || classification.date;
     let formattedDateTime = 'Fecha no disponible';
@@ -736,36 +775,44 @@ class HistorialManager {
       }
     }
 
+    const i18n = window.i18nManager || { t: (key) => key };
     const relevantFields = [
-      { key: 'id', label: 'ID', format: (value) => value ? value.substring(0, 8) + '...' : 'N/A', icon: '🆔' },
-      { key: 'dateTime', label: 'Fecha y Hora', value: formattedDateTime, icon: '📅' },
-      { key: 'shapeConfidence', label: 'Confianza Forma', format: (value) => `${Math.round((value <= 1 ? value * 100 : value))}%`, icon: '📐' },
-      { key: 'shape', label: 'Forma', icon: '💠' },
-      { key: 'status', label: 'Estado', icon: '🚦' }
+      { key: 'species', label: i18n.t('classification.species'), value: plantNameWithConfidence, icon: '🌿' },
+      { key: 'commonName', label: i18n.t('classification.commonName'), value: commonName, icon: '🏷️' },
+      { key: 'healthStatus', label: i18n.t('classification.healthStatus'), value: healthStatus, color: healthColor, icon: healthIcon },
+      { key: 'dateTime', label: i18n.t('classification.dateTime'), value: formattedDateTime, icon: '📅' },
+      { key: 'shapeConfidence', label: i18n.t('classification.formConfidence'), format: (value) => `${Math.round((value <= 1 ? value * 100 : value))}%`, icon: '📐' },
+      { key: 'shape', label: i18n.t('classification.shape'), icon: '💠' },
+      { key: 'status', label: i18n.t('classification.status'), icon: '🚦' }
     ];
 
     const technicalInfoHTML = relevantFields
       .filter(field => {
-        // Para el campo dateTime, usar el valor predefinido
-        if (field.key === 'dateTime') return true;
+        // Campos que siempre deben mostrarse (tienen value predefinido)
+        if (field.value !== undefined) return true;
         // Para los demás, verificar si existen en classification
         return classification[field.key] !== undefined && classification[field.key] !== null;
       })
       .map(field => {
         let value;
-        // Si es dateTime, usar el valor predefinido
-        if (field.key === 'dateTime') {
+        // Si tiene value predefinido (como dateTime, species, commonName, healthStatus)
+        if (field.value !== undefined) {
           value = field.value;
+        } else if (field.format) {
+          value = field.format(classification[field.key]);
         } else {
-          value = field.format ? field.format(classification[field.key]) : classification[field.key];
+          value = classification[field.key];
         }
+        
+        const valueStyle = field.color ? `style="color: ${field.color}; font-weight: 600;"` : '';
+        
         return `
           <div class="info-card">
             <div class="info-label">
               <span class="info-icon">${field.icon}</span>
               ${field.label}
             </div>
-            <div class="info-value">${value}</div>
+            <div class="info-value" ${valueStyle}>${value}</div>
           </div>
         `;
       }).join('');
@@ -852,6 +899,124 @@ window.viewClassificationDetails = function (classificationId) {
   } else {
     console.error('Clasificación no encontrada:', classificationId);
   }
+};
+
+// Función global para mostrar recomendaciones desde el historial
+window.showRecommendationsFromHistorial = function (scientificName, commonName) {
+  const recommendations = getRecommendationsByScientificName(scientificName);
+  const i18n = window.i18nManager || { t: (key) => key };
+  
+  if (!recommendations) {
+    alert(`No hay recomendaciones disponibles para ${scientificName}`);
+    return;
+  }
+
+  // Crear o obtener el modal de recomendaciones
+  let recommendationsModal = document.getElementById("recommendationsModal");
+  
+  if (!recommendationsModal) {
+    recommendationsModal = document.createElement("div");
+    recommendationsModal.id = "recommendationsModal";
+    recommendationsModal.className = "modal hidden";
+    document.body.appendChild(recommendationsModal);
+  }
+
+  const currentLang = i18n.getCurrentLanguage ? i18n.getCurrentLanguage() : 'es';
+  
+  // Construir el contenido del modal
+  let diseasesHTML = '';
+  recommendations.diseases.forEach(disease => {
+    const translatedName = translateRecommendationText(disease.name, currentLang);
+    const translatedSymptoms = disease.symptoms.map(s => translateRecommendationText(s, currentLang));
+    const translatedTreatments = disease.treatments.map(t => translateRecommendationText(t, currentLang));
+    const translatedCause = disease.cause ? translateRecommendationText(disease.cause, currentLang) : '';
+    const translatedVector = disease.vector ? translateRecommendationText(disease.vector, currentLang) : '';
+    
+    const symptomsHTML = translatedSymptoms.map(s => `<li>${s}</li>`).join('');
+    const treatmentsHTML = translatedTreatments.map(t => `<li>${t}</li>`).join('');
+    const causeHTML = translatedCause ? `<p class="disease-cause"><strong>${i18n.t('recommendations.cause')}:</strong> ${translatedCause}</p>` : '';
+    const vectorHTML = translatedVector ? `<p class="disease-vector"><strong>${i18n.t('recommendations.vector')}:</strong> ${translatedVector}</p>` : '';
+    
+    diseasesHTML += `
+      <div class="disease-card">
+        <h4 class="disease-name">${translatedName}</h4>
+        ${causeHTML}
+        ${vectorHTML}
+        <div class="disease-section">
+          <h5 class="disease-section-title">${i18n.t('recommendations.symptoms')}:</h5>
+          <ul class="disease-list">${symptomsHTML}</ul>
+        </div>
+        <div class="disease-section">
+          <h5 class="disease-section-title">${i18n.t('recommendations.treatments')}:</h5>
+          <ul class="disease-list">${treatmentsHTML}</ul>
+        </div>
+      </div>
+    `;
+  });
+
+  const translatedCommonName = translateRecommendationText(recommendations.commonName, currentLang);
+  const translatedPractices = recommendations.generalPractices.map(p => translateRecommendationText(p, currentLang));
+  const generalPracticesHTML = translatedPractices.map(p => `<li>${p}</li>`).join('');
+
+  recommendationsModal.innerHTML = `
+    <div class="modal-overlay"></div>
+    <div class="modal-content recommendations-modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">${i18n.t('recommendations.title')} ${translatedCommonName}</h2>
+        <button class="modal-close-btn" id="closeRecommendationsModal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body recommendations-modal-body">
+        <div class="recommendations-intro">
+          <p class="scientific-name"><em>${recommendations.scientificName}</em></p>
+        </div>
+        <div class="diseases-section">
+          <h3 class="section-title-recommendations">${i18n.t('recommendations.commonDiseases')}</h3>
+          ${diseasesHTML}
+        </div>
+        ${recommendations.generalPractices.length > 0 ? `
+          <div class="general-practices-section">
+            <h3 class="section-title-recommendations">${i18n.t('recommendations.culturalPractices')}</h3>
+            <ul class="disease-list">${generalPracticesHTML}</ul>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+
+  // Agregar event listeners
+  const closeBtn = recommendationsModal.querySelector("#closeRecommendationsModal");
+  const overlay = recommendationsModal.querySelector(".modal-overlay");
+  
+  const closeModal = () => {
+    recommendationsModal.classList.add("hidden");
+    document.body.style.overflow = "";
+  };
+  
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeModal);
+  }
+
+  if (overlay) {
+    overlay.addEventListener("click", closeModal);
+  }
+
+  // Cerrar con ESC
+  const handleEscKey = (e) => {
+    if (e.key === "Escape" && !recommendationsModal.classList.contains("hidden")) {
+      closeModal();
+      document.removeEventListener("keydown", handleEscKey);
+    }
+  };
+  document.addEventListener("keydown", handleEscKey);
+
+  // Mostrar el modal
+  recommendationsModal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
 };
 
 document.addEventListener('DOMContentLoaded', () => {
