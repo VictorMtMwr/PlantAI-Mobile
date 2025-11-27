@@ -187,9 +187,27 @@ sudo systemctl status plantai-mobile
 
 **El comando `systemctl enable` es CRÍTICO** - sin él, el servicio NO se iniciará automáticamente al reiniciar el servidor.
 
-## 🌐 Paso 4: Configurar Nginx como Reverse Proxy
+## 🌐 Paso 4: Exponer la Aplicación en la IP Pública
 
-### 4.1 Crear configuración de Nginx
+**⚠️ IMPORTANTE:** Antes de continuar, configura el Security Group de AWS:
+1. Ve a AWS Console → EC2 → Tu Instancia → Security
+2. Abre el Security Group
+3. Agrega una regla: Tipo `HTTP`, Puerto `80`, Origen `0.0.0.0/0`
+
+### 4.1 Opción A: Configurar Nginx Automáticamente (RECOMENDADO)
+
+El proyecto incluye un script que configura Nginx automáticamente:
+
+```bash
+cd /var/www/plantai-mobile
+./setup-nginx.sh
+```
+
+Este script configura todo y tu aplicación estará disponible en `http://TU_IP_PUBLICA`.
+
+### 4.2 Opción B: Configurar Nginx Manualmente
+
+Si prefieres hacerlo manualmente:
 
 ```bash
 sudo nano /etc/nginx/sites-available/plantai-mobile
@@ -200,7 +218,7 @@ Contenido:
 ```nginx
 server {
     listen 80;
-    server_name tu-dominio.com www.tu-dominio.com;  # O tu IP pública
+    server_name _;  # Acepta cualquier dominio/IP (usa tu IP pública o dominio)
 
     # Logs
     access_log /var/log/nginx/plantai-access.log;
