@@ -43,7 +43,39 @@ server {
     # Tamaño máximo de carga
     client_max_body_size 20M;
 
-    # Proxy a Node.js
+    # Proxy para API (evita problemas de CORS)
+    location /api/ {
+        proxy_pass https://plantai.lab.utb.edu.co/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host plantai.lab.utb.edu.co;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header X-Forwarded-Host \$host;
+        
+        # CORS headers (si el backend no los envía)
+        add_header Access-Control-Allow-Origin * always;
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers "Authorization, Content-Type" always;
+        
+        # Manejar preflight requests
+        if (\$request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin * always;
+            add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+            add_header Access-Control-Allow-Headers "Authorization, Content-Type" always;
+            add_header Access-Control-Max-Age 3600;
+            add_header Content-Type 'text/plain charset=UTF-8';
+            add_header Content-Length 0;
+            return 204;
+        }
+        
+        # Timeouts
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # Proxy a Node.js para la aplicación
     location / {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
