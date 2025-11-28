@@ -141,7 +141,7 @@ export const translations = {
     'developer.julian.education': 'Ingeniero de Sistemas de la Universidad Tecnológica de Bolívar',
     'developer.julian.responsibilities': 'Desarrollador de documentación. Responsable de la documentación del proyecto y la aseguramiento de calidad de la aplicación.',
     'developer.camilo.role': 'Artificial Vision, AI Expert & Testing',
-    'developer.camilo.education': 'Información pendiente',
+    'developer.camilo.education': 'Ingeniero Mecatrónico y candidato a Magister en Ingeniería con énfasis en sensado remoto. Se desempeña en Robótica, Visión Artificial y Sensores e Instrumentación.',
     'developer.camilo.responsibilities': 'Responsable guiar las distintas etapas de entrenamiento y pruebas de los modelos aportando sus conocimiento en visión por computadora. También responsable de la prueba de la aplicación.',
   },
   en: {
@@ -285,7 +285,7 @@ export const translations = {
     'developer.julian.education': 'Systems Engineer from Universidad Tecnológica de Bolívar',
     'developer.julian.responsibilities': 'Documentation Developer. Responsible for project documentation and application quality assurance.',
     'developer.camilo.role': 'Artificial Vision, AI Expert & Testing',
-    'developer.camilo.education': 'Information pending',
+    'developer.camilo.education': 'Mechatronics Engineer and Master’s candidate in Engineering with an emphasis on remote sensing. Works in Robotics, Computer Vision, and Sensors & Instrumentation.',
     'developer.camilo.responsibilities': 'Responsible for guiding the different stages of training and testing of the models, contributing their knowledge in computer vision. Also responsible for application testing.',
   },
   pt: {
@@ -429,7 +429,7 @@ export const translations = {
     'developer.julian.education': 'Engenheiro de Sistemas da Universidad Tecnológica de Bolívar',
     'developer.julian.responsibilities': 'Desenvolvedor de documentação. Responsável pela documentação do projeto e pela garantia de qualidade do aplicativo.',
     'developer.camilo.role': 'Artificial Vision, AI Expert & Testing',
-    'developer.camilo.education': 'Informação pendente',
+    'developer.camilo.education': 'Engenheiro Mecatrônico e candidato a Mestre em Engenharia com ênfase em sensoriamento remoto. Atua em Robótica, Visão Computacional e Sensores e Instrumentação.',
     'developer.camilo.responsibilities': 'Responsável por guiar as diferentes etapas de treinamento e testes dos modelos, contribuindo com seu conhecimento em visão computacional. Também responsável pelos testes do aplicativo.',
   }
 };
